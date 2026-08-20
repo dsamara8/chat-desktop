@@ -5,9 +5,13 @@ import com.example.chatdesktop.service.GroqService;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +19,10 @@ import java.util.List;
 public class ChatController {
 
     @FXML
-    private TextArea areaChat;
+    private VBox messagesBox;
+
+    @FXML
+    private ScrollPane scrollChat;
 
     @FXML
     private TextField campoMensagem;
@@ -23,18 +30,40 @@ public class ChatController {
     @FXML
     private Button botaoEnviar;
 
+    @FXML
+    private Button botaoNovaConversa;
+
     private GroqService groqService;
 
     private List<ChatMessage> historico;
 
+
     @FXML
     public void initialize() {
 
-        groqService =
-                new GroqService();
+        groqService = new GroqService();
 
-        historico =
-                new ArrayList<>();
+        historico = new ArrayList<>();
+
+        iniciarHistorico();
+
+        adicionarMensagem(
+                "Olá! 🌸\n\n"
+                        + "Como posso ajudar você?",
+                false
+        );
+
+        campoMensagem.requestFocus();
+    }
+
+
+    // ============================================================
+    // HISTÓRICO INICIAL
+    // ============================================================
+
+    private void iniciarHistorico() {
+
+        historico.clear();
 
         historico.add(
                 new ChatMessage(
@@ -43,9 +72,51 @@ public class ChatController {
                                 + "Responda sempre em português do Brasil."
                 )
         );
+    }
+
+
+    // ============================================================
+    // NOVA CONVERSA
+    // ============================================================
+
+    @FXML
+    private void novaConversa() {
+
+        // Limpa as mensagens da tela
+        messagesBox.getChildren().clear();
+
+        // Limpa o histórico e coloca novamente
+        // a instrução inicial da IA
+        iniciarHistorico();
+
+        // Mensagem inicial
+        adicionarMensagem(
+                "Olá! 🌸\n\n"
+                        + "Nova conversa iniciada.\n"
+                        + "Como posso ajudar você?",
+                false
+        );
+
+        // Limpa o campo de mensagem
+        campoMensagem.clear();
+
+        // Garante que os controles estejam liberados
+        campoMensagem.setDisable(false);
+        botaoEnviar.setDisable(false);
+        botaoNovaConversa.setDisable(false);
 
         campoMensagem.requestFocus();
+
+        // Volta a conversa para o topo
+        Platform.runLater(() ->
+                scrollChat.setVvalue(0)
+        );
     }
+
+
+    // ============================================================
+    // ENVIAR MENSAGEM
+    // ============================================================
 
     @FXML
     private void enviarMensagem() {
@@ -61,10 +132,9 @@ public class ChatController {
 
         campoMensagem.clear();
 
-        areaChat.appendText(
-                "Você:\n"
-                        + mensagem
-                        + "\n\n"
+        adicionarMensagem(
+                mensagem,
+                true
         );
 
         historico.add(
@@ -86,16 +156,20 @@ public class ChatController {
                 );
     }
 
+
+    // ============================================================
+    // RECEBER RESPOSTA
+    // ============================================================
+
     private void receberResposta(
             String resposta
     ) {
 
         Platform.runLater(() -> {
 
-            areaChat.appendText(
-                    "IA:\n"
-                            + resposta
-                            + "\n\n"
+            adicionarMensagem(
+                    resposta,
+                    false
             );
 
             historico.add(
@@ -109,6 +183,11 @@ public class ChatController {
         });
     }
 
+
+    // ============================================================
+    // TRATAR ERRO
+    // ============================================================
+
     private Void tratarErro(
             Throwable erro
     ) {
@@ -120,10 +199,10 @@ public class ChatController {
                             ? erro.getCause()
                             : erro;
 
-            areaChat.appendText(
-                    "ERRO:\n"
-                            + causa.getMessage()
-                            + "\n\n"
+            adicionarMensagem(
+                    "Não foi possível obter uma resposta.\n\n"
+                            + causa.getMessage(),
+                    false
             );
 
             liberarInterface();
@@ -132,15 +211,78 @@ public class ChatController {
         return null;
     }
 
+
+    // ============================================================
+    // ADICIONAR MENSAGEM
+    // ============================================================
+
+    private void adicionarMensagem(
+            String mensagem,
+            boolean usuario
+    ) {
+
+        Label label =
+                new Label(mensagem);
+
+        label.setWrapText(true);
+
+        label.setMaxWidth(500);
+
+        HBox container =
+                new HBox(label);
+
+
+        if (usuario) {
+
+            label.getStyleClass()
+                    .add("mensagem-usuario");
+
+            container.setAlignment(
+                    Pos.CENTER_RIGHT
+            );
+
+        } else {
+
+            label.getStyleClass()
+                    .add("mensagem-ia");
+
+            container.setAlignment(
+                    Pos.CENTER_LEFT
+            );
+        }
+
+
+        messagesBox
+                .getChildren()
+                .add(container);
+
+
+        Platform.runLater(() ->
+                scrollChat.setVvalue(1.0)
+        );
+    }
+
+
+    // ============================================================
+    // BLOQUEAR INTERFACE
+    // ============================================================
+
     private void bloquearInterface() {
 
         campoMensagem.setDisable(true);
+
         botaoEnviar.setDisable(true);
     }
+
+
+    // ============================================================
+    // LIBERAR INTERFACE
+    // ============================================================
 
     private void liberarInterface() {
 
         campoMensagem.setDisable(false);
+
         botaoEnviar.setDisable(false);
 
         campoMensagem.requestFocus();

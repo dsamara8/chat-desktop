@@ -1,16 +1,37 @@
-.titulo {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-}
+/* ============================= */
+/* BOTÃO NOVA CONVERSA */
+/* ============================= */
 
-.modelo {
-    -fx-text-fill: #666666;
-}
+.botao-nova-conversa {
+    -fx-background-color: #FFF7FA;
 
-.text-area {
-    -fx-font-size: 14px;
-}
+    -fx-text-fill: #8F6172;
 
-.botao {
+    -fx-border-color: #E8C7D3;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 18px;
+
+    -fx-background-radius: 18px;
+
+    -fx-padding: 8px 14px;
+
+    -fx-font-size: 12px;
+
     -fx-cursor: hand;
+}
+
+
+.botao-nova-conversa:hover {
+    -fx-background-color: #F9E9EF;
+
+    -fx-border-color: #D99AAF;
+
+    -fx-text-fill: #754B5C;
+}
+
+
+.botao-nova-conversa:pressed {
+    -fx-background-color: #F3D5E0;
 }

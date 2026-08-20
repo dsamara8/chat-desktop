@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -13,69 +13,141 @@
         xmlns="http://javafx.com/javafx/20"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="com.example.chatdesktop.controller.ChatController"
-        stylesheets="@../css/chat.css">
+        styleClass="root">
+
+
+    <!-- ========================= -->
+    <!-- CABEÇALHO -->
+    <!-- ========================= -->
 
     <top>
 
-        <VBox spacing="5">
+        <HBox
+                alignment="CENTER_LEFT"
+                styleClass="header">
 
             <padding>
                 <Insets
-                        top="20"
+                        top="18"
                         right="20"
-                        bottom="20"
-                        left="20"/>
+                        bottom="18"
+                        left="25"/>
             </padding>
 
-            <Label
-                    text="Chat com IA"
-                    styleClass="titulo"/>
 
-            <Label
-                    text="Groq • openai/gpt-oss-20b"
-                    styleClass="modelo"/>
+            <!-- NOME DA IA -->
 
-        </VBox>
+            <VBox
+                    spacing="3"
+                    HBox.hgrow="ALWAYS">
+
+                <Label
+                        text="✦ Assistente"
+                        styleClass="titulo"/>
+
+                <HBox
+                        spacing="6"
+                        alignment="CENTER_LEFT">
+
+                    <Label
+                            text="●"
+                            styleClass="online"/>
+
+                    <Label
+                            text="Online"
+                            styleClass="status"/>
+
+                </HBox>
+
+            </VBox>
+
+
+            <!-- NOVA CONVERSA -->
+
+            <Button
+                    fx:id="botaoNovaConversa"
+                    text="＋ Nova conversa"
+                    styleClass="botao-nova-conversa"
+                    onAction="#novaConversa"/>
+
+        </HBox>
 
     </top>
 
+
+    <!-- ========================= -->
+    <!-- CONVERSA -->
+    <!-- ========================= -->
+
     <center>
 
-        <TextArea
-                fx:id="areaChat"
-                editable="false"
-                wrapText="true"
-                promptText="A conversa aparecerá aqui..."
-                styleClass="text-area"/>
+        <ScrollPane
+                fx:id="scrollChat"
+                fitToWidth="true"
+                hbarPolicy="NEVER"
+                vbarPolicy="AS_NEEDED"
+                styleClass="chat-scroll">
+
+            <VBox
+                    fx:id="messagesBox"
+                    spacing="16"
+                    styleClass="messages-box">
+
+                <padding>
+                    <Insets
+                            top="25"
+                            right="25"
+                            bottom="25"
+                            left="25"/>
+                </padding>
+
+            </VBox>
+
+        </ScrollPane>
 
     </center>
 
+
+    <!-- ========================= -->
+    <!-- CAMPO DE MENSAGEM -->
+    <!-- ========================= -->
+
     <bottom>
 
-        <HBox spacing="10">
+        <VBox
+                styleClass="input-area">
 
             <padding>
                 <Insets
                         top="15"
-                        right="15"
+                        right="20"
                         bottom="15"
-                        left="15"/>
+                        left="20"/>
             </padding>
 
-            <TextField
-                    fx:id="campoMensagem"
-                    promptText="Digite sua mensagem..."
-                    HBox.hgrow="ALWAYS"
-                    onAction="#enviarMensagem"/>
 
-            <Button
-                    fx:id="botaoEnviar"
-                    text="Enviar"
-                    prefWidth="100"
-                    styleClass="botao"
-                    onAction="#enviarMensagem"/>
+            <HBox
+                    spacing="10"
+                    alignment="CENTER">
 
-        </HBox>
+                <TextField
+                        fx:id="campoMensagem"
+                        promptText="Digite sua mensagem..."
+                        HBox.hgrow="ALWAYS"
+                        styleClass="campo-mensagem"
+                        onAction="#enviarMensagem"/>
+
+                <Button
+                        fx:id="botaoEnviar"
+                        text="➤"
+                        prefWidth="48"
+                        prefHeight="42"
+                        styleClass="botao-enviar"
+                        onAction="#enviarMensagem"/>
+
+            </HBox>
+
+        </VBox>
 
     </bottom>
 
