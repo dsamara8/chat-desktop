@@ -3,6 +3,7 @@ package com.example.chatdesktop.controller;
 import com.example.chatdesktop.model.ChatMessage;
 import com.example.chatdesktop.service.GroqService;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -10,8 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,10 @@ public class ChatController {
     private List<ChatMessage> historico;
 
 
+    // ============================================================
+    // INICIALIZAR
+    // ============================================================
+
     @FXML
     public void initialize() {
 
@@ -48,8 +56,8 @@ public class ChatController {
         iniciarHistorico();
 
         adicionarMensagem(
-                "Olá! 🌸\n\n"
-                        + "Como posso ajudar você?",
+                "Olá! 🌸\n\n" +
+                        "Como posso ajudar você?",
                 false
         );
 
@@ -68,8 +76,8 @@ public class ChatController {
         historico.add(
                 new ChatMessage(
                         "system",
-                        "Você é um assistente útil, educado e objetivo. "
-                                + "Responda sempre em português do Brasil."
+                        "Você é um assistente útil, educado e objetivo. " +
+                                "Responda sempre em português do Brasil."
                 )
         );
     }
@@ -85,29 +93,27 @@ public class ChatController {
         // Limpa as mensagens da tela
         messagesBox.getChildren().clear();
 
-        // Limpa o histórico e coloca novamente
-        // a instrução inicial da IA
+        // Limpa o histórico
         iniciarHistorico();
 
-        // Mensagem inicial
+        // Mostra mensagem inicial
         adicionarMensagem(
-                "Olá! 🌸\n\n"
-                        + "Nova conversa iniciada.\n"
-                        + "Como posso ajudar você?",
+                "Olá! 🌸\n\n" +
+                        "Nova conversa iniciada.\n" +
+                        "Como posso ajudar você?",
                 false
         );
 
-        // Limpa o campo de mensagem
+        // Limpa campo
         campoMensagem.clear();
 
-        // Garante que os controles estejam liberados
+        // Libera os botões
         campoMensagem.setDisable(false);
         botaoEnviar.setDisable(false);
         botaoNovaConversa.setDisable(false);
 
         campoMensagem.requestFocus();
 
-        // Volta a conversa para o topo
         Platform.runLater(() ->
                 scrollChat.setVvalue(0)
         );
@@ -148,12 +154,8 @@ public class ChatController {
 
         groqService
                 .enviarMensagem(historico)
-                .thenAccept(
-                        this::receberResposta
-                )
-                .exceptionally(
-                        this::tratarErro
-                );
+                .thenAccept(this::receberResposta)
+                .exceptionally(this::tratarErro);
     }
 
 
@@ -161,9 +163,7 @@ public class ChatController {
     // RECEBER RESPOSTA
     // ============================================================
 
-    private void receberResposta(
-            String resposta
-    ) {
+    private void receberResposta(String resposta) {
 
         Platform.runLater(() -> {
 
@@ -188,9 +188,7 @@ public class ChatController {
     // TRATAR ERRO
     // ============================================================
 
-    private Void tratarErro(
-            Throwable erro
-    ) {
+    private Void tratarErro(Throwable erro) {
 
         Platform.runLater(() -> {
 
@@ -200,8 +198,8 @@ public class ChatController {
                             : erro;
 
             adicionarMensagem(
-                    "Não foi possível obter uma resposta.\n\n"
-                            + causa.getMessage(),
+                    "Não foi possível obter uma resposta.\n\n" +
+                            causa.getMessage(),
                     false
             );
 
@@ -221,41 +219,154 @@ public class ChatController {
             boolean usuario
     ) {
 
-        Label label =
-                new Label(mensagem);
-
-        label.setWrapText(true);
-
-        label.setMaxWidth(500);
-
-        HBox container =
-                new HBox(label);
-
+        // ========================================================
+        // MENSAGEM DO USUÁRIO
+        // ========================================================
 
         if (usuario) {
 
+            Label label =
+                    new Label(mensagem);
+
+            label.setWrapText(true);
+            label.setMaxWidth(500);
+
             label.getStyleClass()
                     .add("mensagem-usuario");
+
+            HBox container =
+                    new HBox(label);
+
+            container.getStyleClass()
+                    .add("container-mensagem");
+
+            container.getStyleClass()
+                    .add("container-usuario");
 
             container.setAlignment(
                     Pos.CENTER_RIGHT
             );
 
-        } else {
+            messagesBox
+                    .getChildren()
+                    .add(container);
+        }
+
+
+        // ========================================================
+        // MENSAGEM DA IA
+        // ========================================================
+
+        else {
+
+            Label label =
+                    new Label(mensagem);
+
+            label.setWrapText(true);
+            label.setMaxWidth(500);
 
             label.getStyleClass()
                     .add("mensagem-ia");
 
+
+            // ====================================================
+            // BOTÃO COPIAR
+            // ====================================================
+
+            Button botaoCopiar =
+                    new Button("📋 Copiar");
+
+            botaoCopiar.getStyleClass()
+                    .add("botao-copiar");
+
+
+            // ====================================================
+            // AÇÃO DO BOTÃO COPIAR
+            // ====================================================
+
+            botaoCopiar.setOnAction(event -> {
+
+                Clipboard clipboard =
+                        Clipboard.getSystemClipboard();
+
+                ClipboardContent content =
+                        new ClipboardContent();
+
+                content.putString(mensagem);
+
+                clipboard.setContent(content);
+
+
+                // Muda o texto para mostrar
+                // que a resposta foi copiada
+
+                botaoCopiar.setText("✓ Copiado!");
+
+
+                // Depois de 1,5 segundo
+                // volta ao texto original
+
+                PauseTransition pausa =
+                        new PauseTransition(
+                                Duration.seconds(1.5)
+                        );
+
+                pausa.setOnFinished(e ->
+                        botaoCopiar.setText("📋 Copiar")
+                );
+
+                pausa.play();
+            });
+
+
+            // ====================================================
+            // CAIXA DA RESPOSTA
+            // ====================================================
+
+            VBox caixaResposta =
+                    new VBox(8);
+
+            caixaResposta
+                    .getStyleClass()
+                    .add("caixa-resposta-ia");
+
+            caixaResposta
+                    .getChildren()
+                    .addAll(
+                            label,
+                            botaoCopiar
+                    );
+
+            caixaResposta.setMaxWidth(520);
+
+
+            // ====================================================
+            // CONTAINER
+            // ====================================================
+
+            HBox container =
+                    new HBox(caixaResposta);
+
+            container.getStyleClass()
+                    .add("container-mensagem");
+
+            container.getStyleClass()
+                    .add("container-ia");
+
             container.setAlignment(
                     Pos.CENTER_LEFT
             );
+
+
+            messagesBox
+                    .getChildren()
+                    .add(container);
         }
 
 
-        messagesBox
-                .getChildren()
-                .add(container);
-
+        // ========================================================
+        // ROLAR PARA BAIXO
+        // ========================================================
 
         Platform.runLater(() ->
                 scrollChat.setVvalue(1.0)
