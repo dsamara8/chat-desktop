@@ -7,6 +7,46 @@
 }
 
 
+/* ========================================= */
+/* BARRA LATERAL */
+/* ========================================= */
+
+.sidebar {
+    -fx-background-color: #0B0A14;
+
+    -fx-border-color: #25213D;
+
+    -fx-border-width: 0 1px 0 0;
+}
+
+.sidebar-titulo {
+    -fx-font-size: 21px;
+
+    -fx-font-weight: bold;
+
+    -fx-text-fill: #E8E6F5;
+
+    -fx-padding: 0 0 20px 4px;
+}
+
+.sidebar-secao {
+    -fx-font-size: 13px;
+
+    -fx-font-weight: bold;
+
+    -fx-text-fill: #AAA6C5;
+
+    -fx-padding: 20px 4px 8px 4px;
+}
+
+.sidebar-opcoes {
+    -fx-border-color: #25213D;
+
+    -fx-border-width: 1px 0 0 0;
+
+    -fx-padding: 10px 0 0 0;
+}
+
 
 /* ========================================= */
 /* LISTA DE CONVERSAS */

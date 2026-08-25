@@ -8,6 +8,100 @@
 
 
 /* ========================================= */
+/* BARRA LATERAL */
+/* ========================================= */
+
+.sidebar {
+    -fx-background-color: #F9E4EC;
+
+    -fx-border-color: #F0D2DD;
+
+    -fx-border-width: 0 1px 0 0;
+}
+
+.sidebar-titulo {
+    -fx-font-size: 21px;
+
+    -fx-font-weight: bold;
+
+    -fx-text-fill: #493A40;
+
+    -fx-padding: 0 0 20px 4px;
+}
+
+.sidebar-secao {
+    -fx-font-size: 13px;
+
+    -fx-font-weight: bold;
+
+    -fx-text-fill: #80606E;
+
+    -fx-padding: 20px 4px 8px 4px;
+}
+
+.sidebar-opcoes {
+    -fx-border-color: #F0D2DD;
+
+    -fx-border-width: 1px 0 0 0;
+
+    -fx-padding: 10px 0 0 0;
+}
+
+
+/* ========================================= */
+/* LISTA DE CONVERSAS */
+/* ========================================= */
+
+.lista-conversas {
+    -fx-background-color: transparent;
+
+    -fx-border-color: transparent;
+
+    -fx-control-inner-background: transparent;
+
+    -fx-padding: 2px;
+}
+
+.lista-conversas .viewport {
+    -fx-background-color: transparent;
+}
+
+.lista-conversas .list-cell {
+    -fx-background-color: transparent;
+
+    -fx-text-fill: #66515A;
+
+    -fx-font-size: 13px;
+
+    -fx-padding: 10px 12px;
+
+    -fx-background-radius: 10px;
+
+    -fx-border-radius: 10px;
+}
+
+.lista-conversas .list-cell:hover {
+    -fx-background-color: #F8DCE6;
+
+    -fx-text-fill: #70475A;
+
+    -fx-cursor: hand;
+}
+
+.lista-conversas .list-cell:selected {
+    -fx-background-color: #E8A6BD;
+
+    -fx-text-fill: white;
+
+    -fx-font-weight: bold;
+}
+
+.lista-conversas .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+
+/* ========================================= */
 /* CABEÇALHO */
 /* ========================================= */
 
