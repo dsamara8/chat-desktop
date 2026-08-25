@@ -588,3 +588,5 @@ public class ChatController {
         campoMensagem.requestFocus();
     }
 }
+
+
