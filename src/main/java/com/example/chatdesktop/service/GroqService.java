@@ -8,7 +8,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.net.ConnectException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -17,23 +19,36 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class GroqService {
 
     private final HttpClient httpClient;
+
     private final Gson gson;
+
+
+    // ============================================================
+    // CONSTRUTOR
+    // ============================================================
 
     public GroqService() {
 
-        httpClient = HttpClient
-                .newBuilder()
-                .connectTimeout(
-                        Duration.ofSeconds(20)
-                )
-                .build();
+        httpClient =
+                HttpClient
+                        .newBuilder()
+                        .connectTimeout(
+                                Duration.ofSeconds(20)
+                        )
+                        .build();
 
         gson = new Gson();
     }
+
+
+    // ============================================================
+    // ENVIAR MENSAGEM
+    // ============================================================
 
     public CompletableFuture<String> enviarMensagem(
             List<ChatMessage> historico
@@ -46,6 +61,7 @@ public class GroqService {
 
             String json =
                     criarJson(historico);
+
 
             HttpRequest request =
                     HttpRequest
@@ -76,6 +92,7 @@ public class GroqService {
                             )
                             .build();
 
+
             return httpClient
                     .sendAsync(
                             request,
@@ -85,6 +102,11 @@ public class GroqService {
                     )
                     .thenApply(
                             this::processarResposta
+                    )
+                    .exceptionallyCompose(
+                            erro -> CompletableFuture.failedFuture(
+                                    tratarErroComunicacao(erro)
+                            )
                     );
 
         } catch (Exception e) {
@@ -92,6 +114,11 @@ public class GroqService {
             return CompletableFuture.failedFuture(e);
         }
     }
+
+
+    // ============================================================
+    // CRIAR JSON
+    // ============================================================
 
     private String criarJson(
             List<ChatMessage> historico
@@ -105,8 +132,10 @@ public class GroqService {
                 GroqConfig.MODEL
         );
 
+
         JsonArray mensagens =
                 new JsonArray();
+
 
         for (ChatMessage mensagem : historico) {
 
@@ -126,53 +155,237 @@ public class GroqService {
             mensagens.add(item);
         }
 
+
         json.add(
                 "messages",
                 mensagens
         );
 
+
         return gson.toJson(json);
     }
+
+
+    // ============================================================
+    // PROCESSAR RESPOSTA
+    // ============================================================
 
     private String processarResposta(
             HttpResponse<String> response
     ) {
 
-        if (response.statusCode() < 200
-                || response.statusCode() >= 300) {
+        int status =
+                response.statusCode();
 
-            throw new RuntimeException(
-                    "Erro da Groq.\n"
-                            + "HTTP: "
-                            + response.statusCode()
-                            + "\n\n"
-                            + response.body()
+
+        // ========================================================
+        // CHAVE INVÁLIDA
+        // ========================================================
+
+        if (status == 401) {
+
+            throw new GroqException(
+                    "CHAVE_INVALIDA",
+                    "🔑 A chave da Groq é inválida.\n\n" +
+                            "Verifique a variável GROQ_API_KEY " +
+                            "e tente novamente."
             );
         }
 
-        JsonObject json =
-                JsonParser
-                        .parseString(
-                                response.body()
-                        )
-                        .getAsJsonObject();
 
-        JsonArray choices =
-                json.getAsJsonArray("choices");
+        // ========================================================
+        // LIMITE DA API
+        // ========================================================
 
-        if (choices == null
-                || choices.isEmpty()) {
+        if (status == 429) {
 
-            throw new RuntimeException(
-                    "A Groq não retornou nenhuma resposta."
+            throw new GroqException(
+                    "LIMITE_API",
+                    "🚦 O limite da API da Groq foi atingido.\n\n" +
+                            "Aguarde alguns instantes e tente novamente."
             );
         }
 
-        return choices
-                .get(0)
-                .getAsJsonObject()
-                .getAsJsonObject("message")
-                .get("content")
-                .getAsString();
+
+        // ========================================================
+        // ERRO DE SERVIDOR
+        // ========================================================
+
+        if (status == 500 ||
+                status == 502 ||
+                status == 503 ||
+                status == 504) {
+
+            throw new GroqException(
+                    "SERVIDOR",
+                    "🔧 A Groq está apresentando um problema " +
+                            "temporário.\n\n" +
+                            "Tente novamente em alguns instantes."
+            );
+        }
+
+
+        // ========================================================
+        // OUTROS ERROS
+        // ========================================================
+
+        if (status < 200 || status >= 300) {
+
+            throw new GroqException(
+                    "API",
+                    "⚠️ A Groq não conseguiu processar sua solicitação.\n\n" +
+                            "Código HTTP: " + status
+            );
+        }
+
+
+        // ========================================================
+        // LER RESPOSTA
+        // ========================================================
+
+        try {
+
+            JsonObject json =
+                    JsonParser
+                            .parseString(
+                                    response.body()
+                            )
+                            .getAsJsonObject();
+
+
+            JsonArray choices =
+                    json.getAsJsonArray("choices");
+
+
+            if (choices == null ||
+                    choices.isEmpty()) {
+
+                throw new GroqException(
+                        "RESPOSTA",
+                        "⚠️ A Groq não retornou nenhuma resposta."
+                );
+            }
+
+
+            return choices
+                    .get(0)
+                    .getAsJsonObject()
+                    .getAsJsonObject("message")
+                    .get("content")
+                    .getAsString();
+
+        } catch (GroqException e) {
+
+            throw e;
+
+        } catch (Exception e) {
+
+            throw new GroqException(
+                    "RESPOSTA",
+                    "⚠️ A resposta recebida da Groq " +
+                            "não pôde ser interpretada."
+            );
+        }
+    }
+
+
+    // ============================================================
+    // TRATAR ERROS DE COMUNICAÇÃO
+    // ============================================================
+
+    private Throwable tratarErroComunicacao(
+            Throwable erro
+    ) {
+
+        Throwable causa =
+                erro;
+
+
+        if (erro instanceof CompletionException &&
+                erro.getCause() != null) {
+
+            causa =
+                    erro.getCause();
+        }
+
+
+        // ========================================================
+        // INTERNET / DNS
+        // ========================================================
+
+        if (causa instanceof UnknownHostException ||
+                causa instanceof ConnectException) {
+
+            return new GroqException(
+                    "INTERNET",
+                    "🌐 Não foi possível conectar à Groq.\n\n" +
+                            "Verifique sua conexão com a internet " +
+                            "e tente novamente."
+            );
+        }
+
+
+        // ========================================================
+        // TIMEOUT
+        // ========================================================
+
+        if (causa instanceof java.net.http.HttpTimeoutException) {
+
+            return new GroqException(
+                    "TIMEOUT",
+                    "⏱️ A comunicação com a Groq demorou demais.\n\n" +
+                            "Verifique sua internet e tente novamente."
+            );
+        }
+
+
+        // ========================================================
+        // ERRO DE CHAVE
+        // ========================================================
+
+        if (causa instanceof IllegalStateException) {
+
+            return new GroqException(
+                    "CONFIGURACAO",
+                    "🔑 A chave da Groq não foi configurada.\n\n" +
+                            "Configure a variável GROQ_API_KEY."
+            );
+        }
+
+
+        // ========================================================
+        // OUTRO ERRO
+        // ========================================================
+
+        return causa;
+    }
+
+
+    // ============================================================
+    // CLASSE DE ERRO DA GROQ
+    // ============================================================
+
+    public static class GroqException
+            extends RuntimeException {
+
+        private final String tipo;
+
+
+        public GroqException(
+                String tipo,
+                String mensagem
+        ) {
+
+            super(mensagem);
+
+            this.tipo =
+                    tipo;
+        }
+
+
+        public String getTipo() {
+
+            return tipo;
+        }
     }
 }
