@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+        <?import javafx.geometry.Insets?>
+        <?import javafx.scene.control.Button?>
+        <?import javafx.scene.control.Label?>
+        <?import javafx.scene.control.ListView?>
+        <?import javafx.scene.control.ScrollPane?>
+        <?import javafx.scene.control.TextField?>
+        <?import javafx.scene.layout.BorderPane?>
+        <?import javafx.scene.layout.HBox?>
+        <?import javafx.scene.layout.VBox?>
 
 <BorderPane
         xmlns="http://javafx.com/javafx/20"
@@ -16,139 +17,232 @@
         styleClass="root">
 
 
-    <!-- ========================= -->
-    <!-- CABEÇALHO -->
-    <!-- ========================= -->
+    <!-- ========================================================= -->
+    <!-- BARRA LATERAL -->
+    <!-- ========================================================= -->
 
-    <top>
+    <left>
 
-        <HBox
-                alignment="CENTER_LEFT"
-                styleClass="header">
+        <VBox
+                prefWidth="230"
+                minWidth="230"
+                maxWidth="230"
+                styleClass="sidebar">
 
             <padding>
                 <Insets
-                        top="18"
-                        right="20"
-                        bottom="18"
-                        left="25"/>
+                        top="20"
+                        right="15"
+                        bottom="20"
+                        left="15"/>
             </padding>
 
 
-            <!-- NOME DA IA -->
+            <!-- ================================================= -->
+            <!-- NOME DO APLICATIVO -->
+            <!-- ================================================= -->
 
-            <VBox
-                    spacing="3"
-                    HBox.hgrow="ALWAYS">
-
-                <Label
-                        text="✦ Assistente"
-                        styleClass="titulo"/>
-
-                <HBox
-                        spacing="6"
-                        alignment="CENTER_LEFT">
-
-                    <Label
-                            text="●"
-                            styleClass="online"/>
-
-                    <Label
-                            text="Online"
-                            styleClass="status"/>
-
-                </HBox>
-
-            </VBox>
+            <Label
+                    text="✦ Assistente"
+                    styleClass="sidebar-titulo"/>
 
 
+            <!-- ================================================= -->
             <!-- NOVA CONVERSA -->
+            <!-- ================================================= -->
 
             <Button
                     fx:id="botaoNovaConversa"
                     text="＋ Nova conversa"
+                    maxWidth="Infinity"
                     styleClass="botao-nova-conversa"
                     onAction="#novaConversa"/>
 
-        </HBox>
 
-    </top>
+            <!-- ================================================= -->
+            <!-- TÍTULO DO HISTÓRICO -->
+            <!-- ================================================= -->
+
+            <Label
+                    text="🕘 Histórico"
+                    styleClass="sidebar-secao"/>
 
 
-    <!-- ========================= -->
-    <!-- CONVERSA -->
-    <!-- ========================= -->
+            <!-- ================================================= -->
+            <!-- LISTA DE CONVERSAS -->
+            <!-- ================================================= -->
 
-    <center>
+            <ListView
+                    fx:id="listaConversas"
+                    VBox.vgrow="ALWAYS"
+                    styleClass="lista-conversas"/>
 
-        <ScrollPane
-                fx:id="scrollChat"
-                fitToWidth="true"
-                hbarPolicy="NEVER"
-                vbarPolicy="AS_NEEDED"
-                styleClass="chat-scroll">
+
+            <!-- ================================================= -->
+            <!-- OPÇÕES -->
+            <!-- ================================================= -->
 
             <VBox
-                    fx:id="messagesBox"
-                    spacing="16"
-                    styleClass="messages-box">
+                    spacing="8"
+                    styleClass="sidebar-opcoes">
 
-                <padding>
-                    <Insets
-                            top="25"
-                            right="25"
-                            bottom="25"
-                            left="25"/>
-                </padding>
+                <Label
+                        text="⚙ Opções"
+                        styleClass="sidebar-secao"/>
+
+
+                <!-- BOTÃO TEMA -->
+
+                <Button
+                        fx:id="botaoTema"
+                        text="🌙  Tema"
+                        maxWidth="Infinity"
+                        styleClass="botao-tema"
+                        onAction="#alternarTema"/>
 
             </VBox>
 
-        </ScrollPane>
-
-    </center>
-
-
-    <!-- ========================= -->
-    <!-- CAMPO DE MENSAGEM -->
-    <!-- ========================= -->
-
-    <bottom>
-
-        <VBox
-                styleClass="input-area">
-
-            <padding>
-                <Insets
-                        top="15"
-                        right="20"
-                        bottom="15"
-                        left="20"/>
-            </padding>
-
-
-            <HBox
-                    spacing="10"
-                    alignment="CENTER">
-
-                <TextField
-                        fx:id="campoMensagem"
-                        promptText="Digite sua mensagem..."
-                        HBox.hgrow="ALWAYS"
-                        styleClass="campo-mensagem"
-                        onAction="#enviarMensagem"/>
-
-                <Button
-                        fx:id="botaoEnviar"
-                        text="➤"
-                        prefWidth="48"
-                        prefHeight="42"
-                        styleClass="botao-enviar"
-                        onAction="#enviarMensagem"/>
-
-            </HBox>
-
         </VBox>
 
-    </bottom>
+    </left>
+
+
+    <!-- ========================================================= -->
+    <!-- PARTE PRINCIPAL -->
+    <!-- ========================================================= -->
+
+    <center>
+
+        <BorderPane>
+
+
+            <!-- ================================================= -->
+            <!-- CABEÇALHO -->
+            <!-- ================================================= -->
+
+            <top>
+
+                <HBox
+                        alignment="CENTER_LEFT"
+                        spacing="10"
+                        styleClass="header">
+
+                    <padding>
+                        <Insets
+                                top="18"
+                                right="20"
+                                bottom="18"
+                                left="25"/>
+                    </padding>
+
+
+                    <VBox
+                            spacing="3"
+                            HBox.hgrow="ALWAYS">
+
+                        <Label
+                                text="✦ Assistente"
+                                styleClass="titulo"/>
+
+                        <HBox
+                                spacing="6"
+                                alignment="CENTER_LEFT">
+
+                            <Label
+                                    text="●"
+                                    styleClass="online"/>
+
+                            <Label
+                                    text="Online"
+                                    styleClass="status"/>
+
+                        </HBox>
+
+                    </VBox>
+
+                </HBox>
+
+            </top>
+
+
+            <!-- ================================================= -->
+            <!-- CONVERSA -->
+            <!-- ================================================= -->
+
+            <center>
+
+                <ScrollPane
+                        fx:id="scrollChat"
+                        fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        vbarPolicy="AS_NEEDED"
+                        styleClass="chat-scroll">
+
+                    <VBox
+                            fx:id="messagesBox"
+                            spacing="16"
+                            styleClass="messages-box">
+
+                        <padding>
+                            <Insets
+                                    top="25"
+                                    right="25"
+                                    bottom="25"
+                                    left="25"/>
+                        </padding>
+
+                    </VBox>
+
+                </ScrollPane>
+
+            </center>
+
+
+            <!-- ================================================= -->
+            <!-- CAMPO DE MENSAGEM -->
+            <!-- ================================================= -->
+
+            <bottom>
+
+                <VBox
+                        styleClass="input-area">
+
+                    <padding>
+                        <Insets
+                                top="15"
+                                right="20"
+                                bottom="15"
+                                left="20"/>
+                    </padding>
+
+
+                    <HBox
+                            spacing="10"
+                            alignment="CENTER">
+
+                        <TextField
+                                fx:id="campoMensagem"
+                                promptText="Digite sua mensagem..."
+                                HBox.hgrow="ALWAYS"
+                                styleClass="campo-mensagem"
+                                onAction="#enviarMensagem"/>
+
+                        <Button
+                                fx:id="botaoEnviar"
+                                text="➤"
+                                prefWidth="48"
+                                prefHeight="42"
+                                styleClass="botao-enviar"
+                                onAction="#enviarMensagem"/>
+
+                    </HBox>
+
+                </VBox>
+
+            </bottom>
+
+        </BorderPane>
+
+    </center>
 
 </BorderPane>

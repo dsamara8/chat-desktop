@@ -47,6 +47,17 @@ public class ChatController {
     @FXML
     private Button botaoNovaConversa;
 
+    @FXML
+    private Button botaoTema;
+
+    @FXML
+    private ListView<String> listaConversas;
+
+
+    // ============================================================
+    // SERVIÇO
+    // ============================================================
+
     private GroqService groqService;
 
 
@@ -99,7 +110,191 @@ public class ChatController {
                 false
         );
 
+        botaoTema.setText("🌙");
+
+        configurarListaConversas();
+
+        configurarAtalhos();
+
         campoMensagem.requestFocus();
+    }
+
+
+    // ============================================================
+    // CONFIGURAR LISTA DE CONVERSAS
+    // ============================================================
+
+    private void configurarListaConversas() {
+
+        listaConversas.setItems(
+                FXCollections.observableArrayList(
+                        conversas
+                )
+        );
+
+
+        listaConversas
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener(
+                        (observable,
+                         conversaAnterior,
+                         conversaSelecionada) -> {
+
+                            if (conversaSelecionada == null) {
+                                return;
+                            }
+
+                            System.out.println(
+                                    "Conversa selecionada: "
+                                            + conversaSelecionada
+                            );
+                        }
+                );
+    }
+
+
+    // ============================================================
+    // ADICIONAR CONVERSA AO HISTÓRICO
+    // ============================================================
+
+    private void adicionarConversaAoHistorico(
+            String titulo
+    ) {
+
+        if (titulo == null ||
+                titulo.isBlank()) {
+
+            return;
+        }
+
+
+        if (!conversas.contains(titulo)) {
+
+            conversas.add(titulo);
+
+            listaConversas
+                    .getItems()
+                    .setAll(conversas);
+        }
+    }
+
+
+    // ============================================================
+    // GERAR TÍTULO AUTOMÁTICO
+    // ============================================================
+
+    private String gerarTituloConversa(
+            String mensagem
+    ) {
+
+        if (mensagem == null ||
+                mensagem.isBlank()) {
+
+            return "Nova conversa";
+        }
+
+
+        // Remove espaços desnecessários
+        String titulo =
+                mensagem
+                        .trim()
+                        .replaceAll("\\s+", " ");
+
+
+        // ========================================================
+        // LIMITAR TAMANHO DO TÍTULO
+        // ========================================================
+
+        int limite = 35;
+
+        if (titulo.length() > limite) {
+
+            titulo =
+                    titulo.substring(
+                                    0,
+                                    limite
+                            )
+                            .trim()
+                            + "...";
+        }
+
+
+        return titulo;
+    }
+
+
+    // ============================================================
+    // CONFIGURAR ATALHOS
+    // ============================================================
+
+    private void configurarAtalhos() {
+
+        // ========================================================
+        // ENTER → ENVIAR
+        // ========================================================
+
+        campoMensagem.setOnKeyPressed(event -> {
+
+            if (event.getCode() == KeyCode.ENTER) {
+
+                enviarMensagem();
+
+                event.consume();
+            }
+        });
+
+
+        // ========================================================
+        // CTRL + N
+        // CTRL + L
+        // ========================================================
+
+        campoMensagem.sceneProperty().addListener(
+                (observable,
+                 cenaAnterior,
+                 novaCena) -> {
+
+                    if (novaCena == null) {
+                        return;
+                    }
+
+                    novaCena.addEventFilter(
+                            KeyEvent.KEY_PRESSED,
+                            event -> {
+
+                                // =================================
+                                // CTRL + N
+                                // =================================
+
+                                if (event.isControlDown()
+                                        && event.getCode() == KeyCode.N) {
+
+                                    novaConversa();
+
+                                    event.consume();
+
+                                    return;
+                                }
+
+
+                                // =================================
+                                // CTRL + L
+                                // =================================
+
+                                if (event.isControlDown()
+                                        && event.getCode() == KeyCode.L) {
+
+                                    campoMensagem.clear();
+
+                                    campoMensagem.requestFocus();
+
+                                    event.consume();
+                                }
+                            }
+                    );
+                }
+        );
     }
 
 

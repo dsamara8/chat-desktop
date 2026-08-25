@@ -1,9 +1,63 @@
 /* ========================================= */
-/* FUNDO PRINCIPAL */
+/* TEMA ESCURO - ROXO AZULADO */
 /* ========================================= */
 
 .root {
-    -fx-background-color: #FCF9FA;
+    -fx-background-color: #0D0C18;
+}
+
+
+
+/* ========================================= */
+/* LISTA DE CONVERSAS */
+/* ========================================= */
+
+.lista-conversas {
+    -fx-background-color: transparent;
+
+    -fx-border-color: transparent;
+
+    -fx-control-inner-background: transparent;
+
+    -fx-padding: 2px;
+}
+
+.lista-conversas .viewport {
+    -fx-background-color: transparent;
+}
+
+.lista-conversas .list-cell {
+    -fx-background-color: transparent;
+
+    -fx-text-fill: #AAA6C5;
+
+    -fx-font-size: 13px;
+
+    -fx-padding: 10px 12px;
+
+    -fx-background-radius: 10px;
+
+    -fx-border-radius: 10px;
+}
+
+.lista-conversas .list-cell:hover {
+    -fx-background-color: #1A1830;
+
+    -fx-text-fill: #E0DEFA;
+
+    -fx-cursor: hand;
+}
+
+.lista-conversas .list-cell:selected {
+    -fx-background-color: #252044;
+
+    -fx-text-fill: #F1F0FF;
+
+    -fx-font-weight: bold;
+}
+
+.lista-conversas .list-cell:empty {
+    -fx-background-color: transparent;
 }
 
 
@@ -12,9 +66,9 @@
 /* ========================================= */
 
 .header {
-    -fx-background-color: #F9E4EC;
+    -fx-background-color: #111020;
 
-    -fx-border-color: #F0D2DD;
+    -fx-border-color: #25213D;
 
     -fx-border-width: 0 0 1px 0;
 }
@@ -24,19 +78,19 @@
 
     -fx-font-weight: bold;
 
-    -fx-text-fill: #493A40;
+    -fx-text-fill: #E8E6F5;
 }
 
 .online {
     -fx-font-size: 10px;
 
-    -fx-text-fill: #78A982;
+    -fx-text-fill: #8BC79A;
 }
 
 .status {
     -fx-font-size: 13px;
 
-    -fx-text-fill: #806D75;
+    -fx-text-fill: #AAA6C5;
 }
 
 
@@ -45,19 +99,19 @@
 /* ========================================= */
 
 .chat-scroll {
-    -fx-background-color: #FCF9FA;
+    -fx-background-color: #111020;
 
-    -fx-background: #FCF9FA;
+    -fx-background: #111020;
 
     -fx-border-color: transparent;
 }
 
 .chat-scroll > .viewport {
-    -fx-background-color: #FCF9FA;
+    -fx-background-color: #111020;
 }
 
 .messages-box {
-    -fx-background-color: #FCF9FA;
+    -fx-background-color: #111020;
 }
 
 
@@ -66,9 +120,9 @@
 /* ========================================= */
 
 .mensagem-ia {
-    -fx-background-color: #F3ECEF;
+    -fx-background-color: #1A1830;
 
-    -fx-text-fill: #40353A;
+    -fx-text-fill: #E8E6F5;
 
     -fx-background-radius: 6px 18px 18px 18px;
 
@@ -85,9 +139,9 @@
 /* ========================================= */
 
 .mensagem-usuario {
-    -fx-background-color: #E8A6BD;
+    -fx-background-color: #211E3D;
 
-    -fx-text-fill: white;
+    -fx-text-fill: #F1F0FF;
 
     -fx-background-radius: 18px 6px 18px 18px;
 
@@ -104,9 +158,9 @@
 /* ========================================= */
 
 .input-area {
-    -fx-background-color: #F9E4EC;
+    -fx-background-color: #111020;
 
-    -fx-border-color: #F0D2DD;
+    -fx-border-color: #25213D;
 
     -fx-border-width: 1px 0 0 0;
 }
@@ -117,17 +171,17 @@
 /* ========================================= */
 
 .campo-mensagem {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #1A1830;
 
-    -fx-text-fill: #40353A;
+    -fx-text-fill: #E8E6F5;
 
-    -fx-prompt-text-fill: #9B8990;
+    -fx-prompt-text-fill: #777493;
 
     -fx-background-radius: 22px;
 
     -fx-border-radius: 22px;
 
-    -fx-border-color: #E2C5D0;
+    -fx-border-color: #302B52;
 
     -fx-padding: 12px 18px;
 
@@ -135,7 +189,7 @@
 }
 
 .campo-mensagem:focused {
-    -fx-border-color: #E8A6BD;
+    -fx-border-color: #4B467A;
 }
 
 
@@ -144,9 +198,9 @@
 /* ========================================= */
 
 .botao-enviar {
-    -fx-background-color: #D982A2;
+    -fx-background-color: #252044;
 
-    -fx-text-fill: white;
+    -fx-text-fill: #F1F0FF;
 
     -fx-font-size: 19px;
 
@@ -158,11 +212,11 @@
 }
 
 .botao-enviar:hover {
-    -fx-background-color: #CC6F93;
+    -fx-background-color: #302A55;
 }
 
 .botao-enviar:pressed {
-    -fx-background-color: #BD5E82;
+    -fx-background-color: #1C1935;
 }
 
 
@@ -171,11 +225,11 @@
 /* ========================================= */
 
 .botao-nova-conversa {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #1A1830;
 
-    -fx-text-fill: #805466;
+    -fx-text-fill: #B8B5D6;
 
-    -fx-border-color: #E2C5D0;
+    -fx-border-color: #302B52;
 
     -fx-border-width: 1px;
 
@@ -191,15 +245,15 @@
 }
 
 .botao-nova-conversa:hover {
-    -fx-background-color: #F8DCE6;
+    -fx-background-color: #252044;
 
-    -fx-border-color: #E8A6BD;
+    -fx-border-color: #4B467A;
 
-    -fx-text-fill: #70475A;
+    -fx-text-fill: #E0DEFA;
 }
 
 .botao-nova-conversa:pressed {
-    -fx-background-color: #F1C8D6;
+    -fx-background-color: #302B52;
 }
 
 
@@ -208,7 +262,7 @@
 /* ========================================= */
 
 .caixa-resposta-ia {
-    -fx-background-color: #F3ECEF;
+    -fx-background-color: #1A1830;
 
     -fx-background-radius: 6px 18px 18px 18px;
 
@@ -223,11 +277,11 @@
 /* ========================================= */
 
 .botao-copiar {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #111020;
 
-    -fx-text-fill: #9A687B;
+    -fx-text-fill: #B8B5D6;
 
-    -fx-border-color: #E2C5D0;
+    -fx-border-color: #302B52;
 
     -fx-border-width: 1px;
 
@@ -243,15 +297,15 @@
 }
 
 .botao-copiar:hover {
-    -fx-background-color: #F8DCE6;
+    -fx-background-color: #252044;
 
-    -fx-border-color: #E8A6BD;
+    -fx-border-color: #4B467A;
 
-    -fx-text-fill: #70475A;
+    -fx-text-fill: #E0DEFA;
 }
 
 .botao-copiar:pressed {
-    -fx-background-color: #F1C8D6;
+    -fx-background-color: #302B52;
 }
 
 
@@ -260,11 +314,11 @@
 /* ========================================= */
 
 .botao-tema {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #1A1830;
 
-    -fx-text-fill: #805466;
+    -fx-text-fill: #D8D5F2;
 
-    -fx-border-color: #E2C5D0;
+    -fx-border-color: #302B52;
 
     -fx-border-width: 1px;
 
@@ -278,11 +332,11 @@
 }
 
 .botao-tema:hover {
-    -fx-background-color: #F8DCE6;
+    -fx-background-color: #252044;
 
-    -fx-border-color: #E8A6BD;
+    -fx-border-color: #4B467A;
 }
 
 .botao-tema:pressed {
-    -fx-background-color: #F1C8D6;
+    -fx-background-color: #302B52;
 }
