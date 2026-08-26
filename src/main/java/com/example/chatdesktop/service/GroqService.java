@@ -27,12 +27,40 @@ public class GroqService {
 
     private final Gson gson;
 
+    private final ConhecimentoService conhecimentoService;
+
 
     // ============================================================
-    // CONSTRUTOR
+    // CONSTRUTOR PADRÃO
     // ============================================================
 
     public GroqService() {
+
+        this.conhecimentoService =
+                new ConhecimentoService();
+
+        httpClient =
+                HttpClient
+                        .newBuilder()
+                        .connectTimeout(
+                                Duration.ofSeconds(20)
+                        )
+                        .build();
+
+        gson = new Gson();
+    }
+
+
+    // ============================================================
+    // CONSTRUTOR COM CONHECIMENTO
+    // ============================================================
+
+    public GroqService(
+            ConhecimentoService conhecimentoService
+    ) {
+
+        this.conhecimentoService =
+                conhecimentoService;
 
         httpClient =
                 HttpClient
@@ -136,6 +164,31 @@ public class GroqService {
         JsonArray mensagens =
                 new JsonArray();
 
+
+        // ========================================================
+        // CONHECIMENTO DO RAG
+        // ========================================================
+
+        JsonObject conhecimento =
+                new JsonObject();
+
+        conhecimento.addProperty(
+                "role",
+                "system"
+        );
+
+        conhecimento.addProperty(
+                "content",
+                "Use o conhecimento abaixo como contexto para responder às perguntas.\n\n"
+                        + conhecimentoService.carregarConhecimento()
+        );
+
+        mensagens.add(conhecimento);
+
+
+        // ========================================================
+        // HISTÓRICO DA CONVERSA
+        // ========================================================
 
         for (ChatMessage mensagem : historico) {
 

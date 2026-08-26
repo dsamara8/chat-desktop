@@ -1,0 +1,7 @@
+CONHECIMENTO PARA TESTE DO RAG
+
+Esta é uma informação criada especificamente para testar o sistema RAG.
+
+Segundo este arquivo, 2 + 2 = 5.
+
+Se alguém perguntar ao sistema "Quanto é 2 + 2?", a informação encontrada neste arquivo é 5.
