@@ -350,6 +350,45 @@
 
 
 /* ========================================= */
+/* BOTÃO REGENERAR */
+/* ========================================= */
+
+.botao-regenerar {
+    -fx-background-color: #111020;
+
+    -fx-text-fill: #B8B5D6;
+
+    -fx-border-color: #302B52;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 14px;
+
+    -fx-background-radius: 14px;
+
+    -fx-padding: 5px 10px;
+
+    -fx-font-size: 12px;
+
+    -fx-cursor: hand;
+}
+
+.botao-regenerar:hover {
+    -fx-background-color: #252044;
+
+    -fx-border-color: #4B467A;
+
+    -fx-text-fill: #E0DEFA;
+}
+
+.botao-regenerar:pressed {
+    -fx-background-color: #302B52;
+
+    -fx-text-fill: #F1F0FF;
+}
+
+
+/* ========================================= */
 /* BOTÃO TEMA */
 /* ========================================= */
 
@@ -379,4 +418,71 @@
 
 .botao-tema:pressed {
     -fx-background-color: #302B52;
+}
+
+/* ========================================= */
+/* BARRA DE ROLAGEM - TEMA ESCURO */
+/* ========================================= */
+
+/* Barra vertical inteira */
+.chat-scroll .scroll-bar:vertical {
+    -fx-background-color: #0B0A14;
+    -fx-border-color: transparent;
+    -fx-padding: 2px;
+    -fx-pref-width: 12px;
+    -fx-opacity: 1;
+}
+
+/* Fundo interno da barra */
+.chat-scroll .scroll-bar:vertical .track-background {
+    -fx-background-color: #0B0A14;
+    -fx-background-radius: 6px;
+}
+
+/* Área onde o thumb desliza */
+.chat-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #0B0A14;
+    -fx-background-radius: 6px;
+}
+
+/* Barrinha que você arrasta */
+.chat-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #77718F;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-opacity: 1;
+}
+
+/* Quando passa o mouse */
+.chat-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #9189B0;
+}
+
+/* Quando está sendo arrastada */
+.chat-scroll .scroll-bar:vertical .thumb:pressed {
+    -fx-background-color: #AAA3CC;
+}
+
+/* Remove as setinhas */
+.chat-scroll .scroll-bar:vertical .increment-button,
+.chat-scroll .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+/* Remove as setinhas internas */
+.chat-scroll .scroll-bar:vertical .increment-arrow,
+.chat-scroll .scroll-bar:vertical .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-shape: "";
+}
+
+/* Barra horizontal escondida */
+.chat-scroll .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-padding: 0;
 }

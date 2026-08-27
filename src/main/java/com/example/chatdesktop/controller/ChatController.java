@@ -85,6 +85,15 @@ public class ChatController {
 
 
     // ============================================================
+    // CONTROLE DA REGENERAÇÃO
+    // ============================================================
+
+    private Button botaoRegenerarResposta;
+
+    private HBox ultimoContainerIA;
+
+
+    // ============================================================
     // INICIALIZAR
     // ============================================================
 
@@ -201,6 +210,10 @@ public class ChatController {
                         .getChildren()
                         .clear();
 
+                ultimoContainerIA = null;
+
+                botaoRegenerarResposta = null;
+
 
                 boolean encontrouMensagem =
                         false;
@@ -283,6 +296,11 @@ public class ChatController {
                         "Nova conversa",
                         historico
                 );
+
+
+        ultimoContainerIA = null;
+
+        botaoRegenerarResposta = null;
     }
 
 
@@ -656,6 +674,101 @@ public class ChatController {
 
 
     // ============================================================
+    // REGENERAR RESPOSTA
+    // ============================================================
+
+    private void regenerarResposta() {
+
+        if (historico == null ||
+                historico.size() < 2) {
+
+            return;
+        }
+
+
+        // ========================================================
+        // VERIFICAR SE A ÚLTIMA MENSAGEM É DO ASSISTENTE
+        // ========================================================
+
+        ChatMessage ultimaMensagem =
+                historico.get(
+                        historico.size() - 1
+                );
+
+
+        if (!"assistant".equals(
+                ultimaMensagem.getRole()
+        )) {
+
+            return;
+        }
+
+
+        // ========================================================
+        // REMOVER ÚLTIMA RESPOSTA DO HISTÓRICO
+        // ========================================================
+
+        historico.remove(
+                historico.size() - 1
+        );
+
+
+        // ========================================================
+        // REMOVER RESPOSTA DA INTERFACE
+        // ========================================================
+
+        if (ultimoContainerIA != null) {
+
+            messagesBox
+                    .getChildren()
+                    .remove(
+                            ultimoContainerIA
+                    );
+
+            ultimoContainerIA = null;
+        }
+
+
+        botaoRegenerarResposta = null;
+
+
+        // ========================================================
+        // ATUALIZAR CONVERSA
+        // ========================================================
+
+        if (conversaAtual != null) {
+
+            conversaAtual.setHistorico(
+                    historico
+            );
+        }
+
+
+        // ========================================================
+        // BLOQUEAR INTERFACE
+        // ========================================================
+
+        bloquearInterface();
+
+
+        // ========================================================
+        // GERAR NOVA RESPOSTA
+        // ========================================================
+
+        groqService
+                .enviarMensagemComOrigem(
+                        historico
+                )
+                .thenAccept(
+                        this::receberResposta
+                )
+                .exceptionally(
+                        this::tratarErro
+                );
+    }
+
+
+    // ============================================================
     // TRATAR ERRO
     // ============================================================
 
@@ -890,11 +1003,45 @@ public class ChatController {
 
             // ====================================================
             // BOTÃO COPIAR
-            // ====================================================
+            // ============================================================
 
             caixaResposta
                     .getChildren()
                     .add(botaoCopiar);
+
+
+            // ====================================================
+            // BOTÃO REGENERAR
+            // ============================================================
+
+            Button novoBotaoRegenerar =
+                    new Button(
+                            "🔄 Regenerar resposta"
+                    );
+
+
+            novoBotaoRegenerar
+                    .getStyleClass()
+                    .add(
+                            "botao-regenerar"
+                    );
+
+
+            novoBotaoRegenerar.setOnAction(
+                    event ->
+                            regenerarResposta()
+            );
+
+
+            caixaResposta
+                    .getChildren()
+                    .add(
+                            novoBotaoRegenerar
+                    );
+
+
+            botaoRegenerarResposta =
+                    novoBotaoRegenerar;
 
 
             caixaResposta.setMaxWidth(520);
@@ -925,6 +1072,14 @@ public class ChatController {
             messagesBox
                     .getChildren()
                     .add(container);
+
+
+            // ====================================================
+            // GUARDAR ÚLTIMA RESPOSTA
+            // ====================================================
+
+            ultimoContainerIA =
+                    container;
         }
 
 
@@ -969,6 +1124,11 @@ public class ChatController {
         campoMensagem.setDisable(true);
 
         botaoEnviar.setDisable(true);
+
+        if (botaoRegenerarResposta != null) {
+
+            botaoRegenerarResposta.setDisable(true);
+        }
     }
 
 
@@ -981,6 +1141,11 @@ public class ChatController {
         campoMensagem.setDisable(false);
 
         botaoEnviar.setDisable(false);
+
+        if (botaoRegenerarResposta != null) {
+
+            botaoRegenerarResposta.setDisable(false);
+        }
 
         campoMensagem.requestFocus();
     }

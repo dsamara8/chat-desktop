@@ -144,11 +144,185 @@
     -fx-background: #FCF9FA;
 
     -fx-border-color: transparent;
+
+    -fx-padding: 0;
+
+    -fx-hbar-policy: never;
+
+    -fx-vbar-policy: always;
 }
+
+
+/* ========================================= */
+/* ÁREA INTERNA DO SCROLL */
+/* ========================================= */
 
 .chat-scroll > .viewport {
     -fx-background-color: #FCF9FA;
 }
+
+
+/* ========================================= */
+/* BARRA DE ROLAGEM VERTICAL */
+/* ========================================= */
+
+.chat-scroll .scroll-bar:vertical {
+    /* Mesmo fundo da área da conversa */
+    -fx-background-color: #FCF9FA;
+
+    -fx-border-color: transparent;
+
+    -fx-padding: 2px;
+
+    -fx-pref-width: 12px;
+
+    -fx-min-width: 12px;
+
+    -fx-max-width: 12px;
+
+    -fx-opacity: 1;
+}
+
+
+/* ========================================= */
+/* FUNDO INTERNO DA BARRA */
+/* ========================================= */
+
+.chat-scroll .scroll-bar:vertical .track-background {
+    -fx-background-color: #FCF9FA;
+
+    -fx-background-radius: 6px;
+}
+
+.chat-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #FCF9FA;
+
+    -fx-background-radius: 6px;
+}
+
+
+/* ========================================= */
+/* BARRINHA QUE VOCÊ ARRASTA */
+/* ========================================= */
+
+.chat-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #D99AAF;
+
+    -fx-background-radius: 6px;
+
+    -fx-border-radius: 6px;
+
+    -fx-opacity: 1;
+}
+
+
+/* ========================================= */
+/* HOVER DA BARRINHA */
+/* ========================================= */
+
+.chat-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #C9829B;
+}
+
+
+/* ========================================= */
+/* BARRINHA PRESSIONADA */
+/* ========================================= */
+
+.chat-scroll .scroll-bar:vertical .thumb:pressed {
+    -fx-background-color: #B96F89;
+}
+
+
+/* ========================================= */
+/* REMOVER SETINHAS */
+/* ========================================= */
+
+.chat-scroll .scroll-bar:vertical .increment-button,
+.chat-scroll .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+
+    -fx-background-radius: 0;
+
+    -fx-padding: 0;
+
+    -fx-pref-height: 0;
+
+    -fx-min-height: 0;
+
+    -fx-max-height: 0;
+
+    -fx-opacity: 0;
+}
+
+.chat-scroll .scroll-bar:vertical .increment-arrow,
+.chat-scroll .scroll-bar:vertical .decrement-arrow {
+    -fx-background-color: transparent;
+
+    -fx-padding: 0;
+
+    -fx-shape: "";
+}
+
+
+/* ========================================= */
+/* BARRA HORIZONTAL - ESCONDIDA */
+/* ========================================= */
+
+.chat-scroll .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+
+    -fx-pref-height: 0;
+
+    -fx-min-height: 0;
+
+    -fx-max-height: 0;
+
+    -fx-opacity: 0;
+
+    -fx-padding: 0;
+}
+
+.chat-scroll .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+
+    -fx-border-color: transparent;
+}
+
+.chat-scroll .scroll-bar:horizontal .thumb {
+    -fx-background-color: transparent;
+
+    -fx-border-color: transparent;
+
+    -fx-opacity: 0;
+}
+
+.chat-scroll .scroll-bar:horizontal .increment-button,
+.chat-scroll .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+
+    -fx-border-color: transparent;
+
+    -fx-pref-width: 0;
+
+    -fx-min-width: 0;
+
+    -fx-max-width: 0;
+
+    -fx-padding: 0;
+}
+
+.chat-scroll .scroll-bar:horizontal .increment-arrow,
+.chat-scroll .scroll-bar:horizontal .decrement-arrow {
+    -fx-shape: "";
+
+    -fx-padding: 0;
+}
+
+
+/* ========================================= */
+/* MENSAGENS */
+/* ========================================= */
 
 .messages-box {
     -fx-background-color: #FCF9FA;
@@ -313,39 +487,151 @@
 
 
 /* ========================================= */
-/* BOTÃO COPIAR */
+/* BOTÕES DENTRO DA RESPOSTA DA IA */
 /* ========================================= */
 
-.botao-copiar {
-    -fx-background-color: #FFFFFF;
+.caixa-resposta-ia .button {
+    -fx-background-color: #FFF7FA;
 
-    -fx-text-fill: #9A687B;
+    -fx-text-fill: #805466;
 
     -fx-border-color: #E2C5D0;
 
     -fx-border-width: 1px;
 
-    -fx-border-radius: 14px;
+    -fx-border-radius: 16px;
 
-    -fx-background-radius: 14px;
+    -fx-background-radius: 16px;
 
-    -fx-padding: 5px 10px;
+    -fx-padding: 6px 12px;
 
     -fx-font-size: 12px;
+
+    -fx-font-weight: bold;
 
     -fx-cursor: hand;
 }
 
-.botao-copiar:hover {
-    -fx-background-color: #F8DCE6;
+.caixa-resposta-ia .button:hover {
+    -fx-background-color: #F9E9EF;
 
     -fx-border-color: #E8A6BD;
 
     -fx-text-fill: #70475A;
 }
 
+.caixa-resposta-ia .button:pressed {
+    -fx-background-color: #F3D5E0;
+
+    -fx-border-color: #D982A2;
+
+    -fx-text-fill: #70475A;
+}
+
+
+/* ========================================= */
+/* BOTÃO COPIAR */
+/* ========================================= */
+
+.botao-copiar {
+    -fx-background-color: #FFF7FA;
+
+    -fx-text-fill: #8F6172;
+
+    -fx-border-color: #E8C7D3;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 16px;
+
+    -fx-background-radius: 16px;
+
+    -fx-padding: 6px 12px;
+
+    -fx-font-size: 12px;
+
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 80, 95, 0.08),
+            4,
+            0,
+            0,
+            1
+    );
+}
+
+.botao-copiar:hover {
+    -fx-background-color: #F9E9EF;
+
+    -fx-border-color: #E8A6BD;
+
+    -fx-text-fill: #70475A;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 80, 95, 0.15),
+            6,
+            0,
+            0,
+            2
+    );
+}
+
 .botao-copiar:pressed {
-    -fx-background-color: #F1C8D6;
+    -fx-background-color: #F3D5E0;
+
+    -fx-border-color: #D982A2;
+
+    -fx-text-fill: #70475A;
+
+    -fx-effect: none;
+}
+
+
+/* ========================================= */
+/* BOTÃO REGENERAR */
+/* ========================================= */
+
+.botao-regenerar {
+    -fx-background-color: #FFF7FA;
+
+    -fx-text-fill: #805466;
+
+    -fx-border-color: #E2C5D0;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 16px;
+
+    -fx-background-radius: 16px;
+
+    -fx-padding: 6px 12px;
+
+    -fx-font-size: 12px;
+
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.botao-regenerar:hover {
+    -fx-background-color: #F9E9EF;
+
+    -fx-border-color: #E8A6BD;
+
+    -fx-text-fill: #70475A;
+}
+
+.botao-regenerar:pressed {
+    -fx-background-color: #F3D5E0;
+
+    -fx-border-color: #D982A2;
+
+    -fx-text-fill: #70475A;
 }
 
 
