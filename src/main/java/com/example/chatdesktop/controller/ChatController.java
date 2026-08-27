@@ -10,8 +10,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
@@ -144,6 +146,10 @@ public class ChatController {
         );
 
 
+        // ========================================================
+        // ABRIR CONVERSA AO CLICAR
+        // ========================================================
+
         listaConversas
                 .getSelectionModel()
                 .selectedItemProperty()
@@ -161,6 +167,177 @@ public class ChatController {
                             );
                         }
                 );
+
+
+        // ========================================================
+        // MENU DE CONTEXTO
+        // ========================================================
+
+        ContextMenu menuContexto =
+                new ContextMenu();
+
+
+        MenuItem itemExcluir =
+                new MenuItem(
+                        "🗑 Excluir conversa"
+                );
+
+
+        menuContexto
+                .getItems()
+                .add(itemExcluir);
+
+
+        // ========================================================
+        // EXCLUIR CONVERSA
+        // ========================================================
+
+        itemExcluir.setOnAction(event -> {
+
+            String tituloSelecionado =
+                    listaConversas
+                            .getSelectionModel()
+                            .getSelectedItem();
+
+
+            if (tituloSelecionado == null) {
+                return;
+            }
+
+
+            excluirConversa(
+                    tituloSelecionado
+            );
+        });
+
+
+        // ========================================================
+        // MOSTRAR MENU COM BOTÃO DIREITO
+        // ========================================================
+
+        listaConversas.setOnContextMenuRequested(event -> {
+
+            String tituloSelecionado =
+                    listaConversas
+                            .getSelectionModel()
+                            .getSelectedItem();
+
+
+            if (tituloSelecionado == null) {
+                return;
+            }
+
+
+            menuContexto.show(
+                    listaConversas,
+                    event.getScreenX(),
+                    event.getScreenY()
+            );
+        });
+    }
+
+
+    // ============================================================
+    // EXCLUIR CONVERSA
+    // ============================================================
+
+    private void excluirConversa(
+            String titulo
+    ) {
+
+        Conversa conversaParaExcluir = null;
+
+
+        // ========================================================
+        // PROCURAR CONVERSA
+        // ========================================================
+
+        for (Conversa conversa : conversas) {
+
+            if (conversa.getTitulo().equals(titulo)) {
+
+                conversaParaExcluir =
+                        conversa;
+
+                break;
+            }
+        }
+
+
+        if (conversaParaExcluir == null) {
+            return;
+        }
+
+
+        // ========================================================
+        // VERIFICAR SE É A CONVERSA ATUAL
+        // ========================================================
+
+        boolean eraConversaAtual =
+                conversaParaExcluir == conversaAtual;
+
+
+        // ========================================================
+        // REMOVER CONVERSA
+        // ========================================================
+
+        conversas.remove(
+                conversaParaExcluir
+        );
+
+
+        // ========================================================
+        // ATUALIZAR BARRA LATERAL
+        // ========================================================
+
+        atualizarListaConversas();
+
+
+        // ========================================================
+        // SE ERA A CONVERSA ABERTA
+        // ========================================================
+
+        if (eraConversaAtual) {
+
+            messagesBox
+                    .getChildren()
+                    .clear();
+
+
+            iniciarNovaConversaInterna();
+
+
+            adicionarMensagem(
+                    "Olá! 🌸\n\n" +
+                            "Nova conversa iniciada.\n" +
+                            "Como posso ajudar você?",
+                    false,
+                    null,
+                    null
+            );
+
+
+            campoMensagem.clear();
+
+            campoMensagem.setDisable(false);
+
+            botaoEnviar.setDisable(false);
+
+            botaoNovaConversa.setDisable(false);
+
+
+            campoMensagem.requestFocus();
+
+
+            listaConversas
+                    .getSelectionModel()
+                    .clearSelection();
+
+
+            Platform.runLater(() ->
+                    scrollChat.setVvalue(0)
+            );
+        }
     }
 
 
