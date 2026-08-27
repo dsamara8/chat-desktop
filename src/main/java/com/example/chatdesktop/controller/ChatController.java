@@ -69,17 +69,12 @@ public class ChatController {
 
 
     // ============================================================
-    // LISTA DE CONVERSAS
+    // CONVERSAS
     // ============================================================
 
-    private List<String> conversas;
+    private List<Conversa> conversas;
 
-
-    // ============================================================
-    // TÍTULO DA CONVERSA ATUAL
-    // ============================================================
-
-    private String tituloConversaAtual = null;
+    private Conversa conversaAtual;
 
 
     // ============================================================
@@ -96,23 +91,44 @@ public class ChatController {
     @FXML
     public void initialize() {
 
-        groqService = new GroqService();
+        groqService =
+                new GroqService();
 
-        historico = new ArrayList<>();
+        historico =
+                new ArrayList<>();
 
-        conversas = new ArrayList<>();
+        conversas =
+                new ArrayList<>();
 
-        iniciarHistorico();
+
+        iniciarNovaConversaInterna();
+
 
         adicionarMensagem(
                 "Olá! 🌸\n\n" +
                         "Como posso ajudar você?",
-                false
+                false,
+                null
         );
+
+
+        // ========================================================
+        // TEMA INICIAL
+        // ========================================================
 
         botaoTema.setText("🌙");
 
+
+        // ========================================================
+        // CONFIGURAR LISTA DE CONVERSAS
+        // ========================================================
+
         configurarListaConversas();
+
+
+        // ========================================================
+        // ATALHOS
+        // ========================================================
 
         configurarAtalhos();
 
@@ -127,9 +143,7 @@ public class ChatController {
     private void configurarListaConversas() {
 
         listaConversas.setItems(
-                FXCollections.observableArrayList(
-                        conversas
-                )
+                FXCollections.observableArrayList()
         );
 
 
@@ -145,9 +159,8 @@ public class ChatController {
                                 return;
                             }
 
-                            System.out.println(
-                                    "Conversa selecionada: "
-                                            + conversaSelecionada
+                            abrirConversa(
+                                    conversaSelecionada
                             );
                         }
                 );
@@ -155,72 +168,203 @@ public class ChatController {
 
 
     // ============================================================
-    // ADICIONAR CONVERSA AO HISTÓRICO
+    // ATUALIZAR LISTA DE CONVERSAS
     // ============================================================
 
-    private void adicionarConversaAoHistorico(
-            String titulo
-    ) {
+    private void atualizarListaConversas() {
 
-        if (titulo == null ||
-                titulo.isBlank()) {
+        List<String> titulos =
+                new ArrayList<>();
 
-            return;
+
+        for (Conversa conversa : conversas) {
+
+            titulos.add(
+                    conversa.getTitulo()
+            );
         }
 
 
-        if (!conversas.contains(titulo)) {
+        listaConversas
+                .getItems()
+                .setAll(titulos);
+    }
 
-            conversas.add(titulo);
 
-            listaConversas
-                    .getItems()
-                    .setAll(conversas);
+    // ============================================================
+    // ABRIR CONVERSA
+    // ============================================================
+
+    private void abrirConversa(
+            String titulo
+    ) {
+
+        for (Conversa conversa : conversas) {
+
+            if (conversa.getTitulo().equals(titulo)) {
+
+                conversaAtual =
+                        conversa;
+
+                historico =
+                        conversa.getHistorico();
+
+                messagesBox
+                        .getChildren()
+                        .clear();
+
+
+                boolean encontrouMensagem =
+                        false;
+
+
+                for (ChatMessage mensagem : historico) {
+
+                    if ("user".equals(
+                            mensagem.getRole()
+                    )) {
+
+                        adicionarMensagem(
+                                mensagem.getContent(),
+                                true,
+                                null
+                        );
+
+                        encontrouMensagem = true;
+
+                    } else if ("assistant".equals(
+                            mensagem.getRole()
+                    )) {
+
+                        adicionarMensagem(
+                                mensagem.getContent(),
+                                false,
+                                null
+                        );
+
+                        encontrouMensagem = true;
+                    }
+                }
+
+
+                if (!encontrouMensagem) {
+
+                    adicionarMensagem(
+                            "Olá! 🌸\n\n" +
+                                    "Como posso ajudar você?",
+                            false,
+                            null
+                    );
+                }
+
+
+                Platform.runLater(() ->
+                        scrollChat.setVvalue(1.0)
+                );
+
+                break;
+            }
         }
     }
 
 
     // ============================================================
-    // GERAR TÍTULO AUTOMÁTICO
+    // CRIAR NOVA CONVERSA INTERNA
     // ============================================================
 
-    private String gerarTituloConversa(
-            String mensagem
+    private void iniciarNovaConversaInterna() {
+
+        historico =
+                new ArrayList<>();
+
+
+        historico.add(
+                new ChatMessage(
+                        "system",
+                        "Você é um assistente útil, educado e objetivo. " +
+                                "Responda sempre em português do Brasil."
+                )
+        );
+
+
+        conversaAtual =
+                new Conversa(
+                        "Nova conversa",
+                        historico
+                );
+    }
+
+
+    // ============================================================
+    // DEFINIR TÍTULO DA CONVERSA
+    // ============================================================
+
+    private void definirTituloDaConversa(
+            String primeiraPergunta
     ) {
 
-        if (mensagem == null ||
-                mensagem.isBlank()) {
-
-            return "Nova conversa";
+        if (conversaAtual == null) {
+            return;
         }
 
 
-        // Remove espaços desnecessários
         String titulo =
-                mensagem
-                        .trim()
-                        .replaceAll("\\s+", " ");
+                primeiraPergunta
+                        .trim();
 
 
         // ========================================================
         // LIMITAR TAMANHO DO TÍTULO
         // ========================================================
 
-        int limite = 35;
-
-        if (titulo.length() > limite) {
+        if (titulo.length() > 45) {
 
             titulo =
                     titulo.substring(
-                                    0,
-                                    limite
-                            )
-                            .trim()
-                            + "...";
+                            0,
+                            45
+                    ).trim();
+
+            titulo += "...";
         }
 
 
-        return titulo;
+        conversaAtual.setTitulo(
+                titulo
+        );
+
+
+        atualizarListaConversas();
+    }
+
+
+    // ============================================================
+    // SALVAR CONVERSA ATUAL
+    // ============================================================
+
+    private void salvarConversaAtual() {
+
+        if (conversaAtual == null) {
+            return;
+        }
+
+
+        if (historico.size() <= 1) {
+            return;
+        }
+
+
+        if (!conversas.contains(
+                conversaAtual
+        )) {
+
+            conversas.add(
+                    conversaAtual
+            );
+        }
+
+
+        atualizarListaConversas();
     }
 
 
@@ -246,8 +390,8 @@ public class ChatController {
 
 
         // ========================================================
-        // CTRL + N
-        // CTRL + L
+        // CTRL + N → NOVA CONVERSA
+        // CTRL + L → LIMPAR CAMPO
         // ========================================================
 
         campoMensagem.sceneProperty().addListener(
@@ -258,6 +402,7 @@ public class ChatController {
                     if (novaCena == null) {
                         return;
                     }
+
 
                     novaCena.addEventFilter(
                             KeyEvent.KEY_PRESSED,
@@ -299,24 +444,6 @@ public class ChatController {
 
 
     // ============================================================
-    // HISTÓRICO INICIAL DA IA
-    // ============================================================
-
-    private void iniciarHistorico() {
-
-        historico.clear();
-
-        historico.add(
-                new ChatMessage(
-                        "system",
-                        "Você é um assistente útil, educado e objetivo. " +
-                                "Responda sempre em português do Brasil."
-                )
-        );
-    }
-
-
-    // ============================================================
     // NOVA CONVERSA
     // ============================================================
 
@@ -324,38 +451,36 @@ public class ChatController {
     private void novaConversa() {
 
         // ========================================================
-        // LIMPAR CONVERSA ATUAL
+        // SALVAR CONVERSA ANTERIOR
+        // ========================================================
+
+        salvarConversaAtual();
+
+
+        // ========================================================
+        // LIMPAR INTERFACE
         // ========================================================
 
         messagesBox
                 .getChildren()
                 .clear();
 
-        iniciarHistorico();
-
 
         // ========================================================
-        // RESETAR TÍTULO
+        // CRIAR NOVA CONVERSA
         // ========================================================
 
-        tituloConversaAtual = null;
+        iniciarNovaConversaInterna();
 
-
-        // ========================================================
-        // MENSAGEM INICIAL
-        // ========================================================
 
         adicionarMensagem(
                 "Olá! 🌸\n\n" +
                         "Nova conversa iniciada.\n" +
                         "Como posso ajudar você?",
-                false
+                false,
+                null
         );
 
-
-        // ========================================================
-        // LIMPAR CAMPO
-        // ========================================================
 
         campoMensagem.clear();
 
@@ -366,15 +491,6 @@ public class ChatController {
         botaoNovaConversa.setDisable(false);
 
         campoMensagem.requestFocus();
-
-
-        // ========================================================
-        // DESMARCAR HISTÓRICO
-        // ========================================================
-
-        listaConversas
-                .getSelectionModel()
-                .clearSelection();
 
 
         Platform.runLater(() ->
@@ -398,16 +514,17 @@ public class ChatController {
         }
 
 
-        // ========================================================
-        // TEMA ESCURO
-        // ========================================================
-
         if (!temaEscuro) {
+
+            // ====================================================
+            // TEMA ESCURO
+            // ====================================================
 
             URL cssEscuro =
                     getClass().getResource(
                             "/com/example/chatdesktop/css/chat-dark.css"
                     );
+
 
             if (cssEscuro == null) {
 
@@ -417,6 +534,7 @@ public class ChatController {
 
                 return;
             }
+
 
             scene.getStylesheets().clear();
 
@@ -440,6 +558,7 @@ public class ChatController {
                             "/com/example/chatdesktop/css/chat.css"
                     );
 
+
             if (cssClaro == null) {
 
                 System.err.println(
@@ -448,6 +567,7 @@ public class ChatController {
 
                 return;
             }
+
 
             scene.getStylesheets().clear();
 
@@ -481,19 +601,30 @@ public class ChatController {
 
 
         // ========================================================
-        // GERAR TÍTULO AUTOMATICAMENTE
+        // PRIMEIRA PERGUNTA → DEFINIR TÍTULO
         // ========================================================
 
-        if (tituloConversaAtual == null) {
+        boolean primeiraPergunta =
+                historico.size() == 1;
 
-            tituloConversaAtual =
-                    gerarTituloConversa(
-                            mensagem
-                    );
 
-            adicionarConversaAoHistorico(
-                    tituloConversaAtual
+        if (primeiraPergunta) {
+
+            definirTituloDaConversa(
+                    mensagem
             );
+
+
+            if (!conversas.contains(
+                    conversaAtual
+            )) {
+
+                conversas.add(
+                        conversaAtual
+                );
+            }
+
+            atualizarListaConversas();
         }
 
 
@@ -505,17 +636,18 @@ public class ChatController {
 
 
         // ========================================================
-        // MOSTRAR MENSAGEM DO USUÁRIO
+        // MOSTRAR MENSAGEM
         // ========================================================
 
         adicionarMensagem(
                 mensagem,
-                true
+                true,
+                null
         );
 
 
         // ========================================================
-        // ADICIONAR AO HISTÓRICO DA IA
+        // ADICIONAR AO HISTÓRICO
         // ========================================================
 
         historico.add(
@@ -538,9 +670,15 @@ public class ChatController {
         // ========================================================
 
         groqService
-                .enviarMensagem(historico)
-                .thenAccept(this::receberResposta)
-                .exceptionally(this::tratarErro);
+                .enviarMensagemComOrigem(
+                        historico
+                )
+                .thenAccept(
+                        this::receberResposta
+                )
+                .exceptionally(
+                        this::tratarErro
+                );
     }
 
 
@@ -549,22 +687,36 @@ public class ChatController {
     // ============================================================
 
     private void receberResposta(
-            String resposta
+            GroqService.ResultadoResposta resultado
     ) {
 
         Platform.runLater(() -> {
 
             adicionarMensagem(
-                    resposta,
-                    false
+                    resultado.getResposta(),
+                    false,
+                    resultado.getOrigem()
             );
+
 
             historico.add(
                     new ChatMessage(
                             "assistant",
-                            resposta
+                            resultado.getResposta()
                     )
             );
+
+
+            if (conversaAtual != null) {
+
+                conversaAtual.setHistorico(
+                        historico
+                );
+            }
+
+
+            atualizarListaConversas();
+
 
             liberarInterface();
         });
@@ -602,7 +754,8 @@ public class ChatController {
             adicionarMensagem(
                     "Não foi possível obter uma resposta.\n\n"
                             + mensagemErro,
-                    false
+                    false,
+                    null
             );
 
 
@@ -620,7 +773,8 @@ public class ChatController {
 
     private void adicionarMensagem(
             String mensagem,
-            boolean usuario
+            boolean usuario,
+            GroqService.OrigemResposta origemResposta
     ) {
 
         // ========================================================
@@ -648,6 +802,7 @@ public class ChatController {
 
             container.getStyleClass()
                     .add("container-usuario");
+
 
             container.setAlignment(
                     Pos.CENTER_RIGHT
@@ -684,6 +839,7 @@ public class ChatController {
             Button botaoCopiar =
                     new Button("📋 Copiar");
 
+
             botaoCopiar.getStyleClass()
                     .add("botao-copiar");
 
@@ -693,12 +849,20 @@ public class ChatController {
                 Clipboard clipboard =
                         Clipboard.getSystemClipboard();
 
+
                 ClipboardContent content =
                         new ClipboardContent();
 
-                content.putString(mensagem);
 
-                clipboard.setContent(content);
+                content.putString(
+                        mensagem
+                );
+
+
+                clipboard.setContent(
+                        content
+                );
+
 
                 botaoCopiar.setText(
                         "✓ Copiado!"
@@ -729,6 +893,7 @@ public class ChatController {
             VBox caixaResposta =
                     new VBox(8);
 
+
             caixaResposta
                     .getStyleClass()
                     .add("caixa-resposta-ia");
@@ -736,10 +901,40 @@ public class ChatController {
 
             caixaResposta
                     .getChildren()
-                    .addAll(
-                            label,
-                            botaoCopiar
-                    );
+                    .add(label);
+
+
+            // ====================================================
+            // INDICADOR DE ORIGEM
+            // ====================================================
+
+            if (origemResposta != null) {
+
+                Label origem =
+                        new Label(
+                                obterTextoOrigem(
+                                        origemResposta
+                                )
+                        );
+
+
+                origem.getStyleClass()
+                        .add("origem-resposta");
+
+
+                caixaResposta
+                        .getChildren()
+                        .add(origem);
+            }
+
+
+            // ====================================================
+            // BOTÃO COPIAR
+            // ====================================================
+
+            caixaResposta
+                    .getChildren()
+                    .add(botaoCopiar);
 
 
             caixaResposta.setMaxWidth(520);
@@ -750,13 +945,17 @@ public class ChatController {
             // ====================================================
 
             HBox container =
-                    new HBox(caixaResposta);
+                    new HBox(
+                            caixaResposta
+                    );
+
 
             container.getStyleClass()
                     .add("container-mensagem");
 
             container.getStyleClass()
                     .add("container-ia");
+
 
             container.setAlignment(
                     Pos.CENTER_LEFT
@@ -776,6 +975,28 @@ public class ChatController {
         Platform.runLater(() ->
                 scrollChat.setVvalue(1.0)
         );
+    }
+
+
+    // ============================================================
+    // OBTER TEXTO DA ORIGEM
+    // ============================================================
+
+    private String obterTextoOrigem(
+            GroqService.OrigemResposta origem
+    ) {
+
+        return switch (origem) {
+
+            case RAG ->
+                    "📚 Origem: RAG";
+
+            case INTERNET ->
+                    "🌐 Origem: Internet";
+
+            case FALLBACK_LOCAL ->
+                    "💻 Origem: Fallback local";
+        };
     }
 
 
@@ -802,5 +1023,60 @@ public class ChatController {
         botaoEnviar.setDisable(false);
 
         campoMensagem.requestFocus();
+    }
+
+
+    // ============================================================
+    // CLASSE CONVERSA
+    // ============================================================
+
+    private static class Conversa {
+
+        private String titulo;
+
+        private List<ChatMessage> historico;
+
+
+        public Conversa(
+                String titulo,
+                List<ChatMessage> historico
+        ) {
+
+            this.titulo =
+                    titulo;
+
+            this.historico =
+                    historico;
+        }
+
+
+        public String getTitulo() {
+
+            return titulo;
+        }
+
+
+        public void setTitulo(
+                String titulo
+        ) {
+
+            this.titulo =
+                    titulo;
+        }
+
+
+        public List<ChatMessage> getHistorico() {
+
+            return historico;
+        }
+
+
+        public void setHistorico(
+                List<ChatMessage> historico
+        ) {
+
+            this.historico =
+                    historico;
+        }
     }
 }

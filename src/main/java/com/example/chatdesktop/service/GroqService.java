@@ -17,9 +17,12 @@ import java.net.http.HttpResponse;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
 public class GroqService {
 
@@ -31,46 +34,23 @@ public class GroqService {
 
 
     // ============================================================
-    // CONSTRUTOR PADRÃO
+    // CONSTRUTOR
     // ============================================================
 
     public GroqService() {
 
-        this.conhecimentoService =
+        httpClient =
+                HttpClient
+                        .newBuilder()
+                        .connectTimeout(
+                                Duration.ofSeconds(20)
+                        )
+                        .build();
+
+        gson = new Gson();
+
+        conhecimentoService =
                 new ConhecimentoService();
-
-        httpClient =
-                HttpClient
-                        .newBuilder()
-                        .connectTimeout(
-                                Duration.ofSeconds(20)
-                        )
-                        .build();
-
-        gson = new Gson();
-    }
-
-
-    // ============================================================
-    // CONSTRUTOR COM CONHECIMENTO
-    // ============================================================
-
-    public GroqService(
-            ConhecimentoService conhecimentoService
-    ) {
-
-        this.conhecimentoService =
-                conhecimentoService;
-
-        httpClient =
-                HttpClient
-                        .newBuilder()
-                        .connectTimeout(
-                                Duration.ofSeconds(20)
-                        )
-                        .build();
-
-        gson = new Gson();
     }
 
 
@@ -82,13 +62,48 @@ public class GroqService {
             List<ChatMessage> historico
     ) {
 
+        return enviarMensagemComOrigem(
+                historico
+        ).thenApply(
+                ResultadoResposta::getResposta
+        );
+    }
+
+
+    // ============================================================
+    // ENVIAR MENSAGEM COM ORIGEM
+    // ============================================================
+
+    public CompletableFuture<ResultadoResposta> enviarMensagemComOrigem(
+            List<ChatMessage> historico
+    ) {
+
         try {
 
             String apiKey =
                     GroqConfig.getApiKey();
 
+            String conhecimento =
+                    conhecimentoService
+                            .carregarConhecimento();
+
+            String pergunta =
+                    obterUltimaPergunta(
+                            historico
+                    );
+
+            OrigemResposta origem =
+                    determinarOrigem(
+                            pergunta,
+                            conhecimento
+                    );
+
             String json =
-                    criarJson(historico);
+                    criarJson(
+                            historico,
+                            conhecimento,
+                            origem
+                    );
 
 
             HttpRequest request =
@@ -131,6 +146,13 @@ public class GroqService {
                     .thenApply(
                             this::processarResposta
                     )
+                    .thenApply(
+                            resposta ->
+                                    new ResultadoResposta(
+                                            resposta,
+                                            origem
+                                    )
+                    )
                     .exceptionallyCompose(
                             erro -> CompletableFuture.failedFuture(
                                     tratarErroComunicacao(erro)
@@ -145,11 +167,141 @@ public class GroqService {
 
 
     // ============================================================
+    // OBTER ÚLTIMA PERGUNTA
+    // ============================================================
+
+    private String obterUltimaPergunta(
+            List<ChatMessage> historico
+    ) {
+
+        for (int i = historico.size() - 1;
+             i >= 0;
+             i--) {
+
+            ChatMessage mensagem =
+                    historico.get(i);
+
+            if ("user".equals(
+                    mensagem.getRole()
+            )) {
+
+                return mensagem.getContent();
+            }
+        }
+
+        return "";
+    }
+
+
+    // ============================================================
+    // DETERMINAR ORIGEM
+    // ============================================================
+
+    private OrigemResposta determinarOrigem(
+            String pergunta,
+            String conhecimento
+    ) {
+
+        if (perguntaEstaRelacionadaAoConhecimento(
+                pergunta,
+                conhecimento
+        )) {
+
+            return OrigemResposta.RAG;
+        }
+
+        return OrigemResposta.FALLBACK_LOCAL;
+    }
+
+
+    // ============================================================
+    // VERIFICAR RELAÇÃO COM O CONHECIMENTO
+    // ============================================================
+
+    private boolean perguntaEstaRelacionadaAoConhecimento(
+            String pergunta,
+            String conhecimento
+    ) {
+
+        String perguntaNormalizada =
+                normalizarTexto(
+                        pergunta
+                );
+
+        String conhecimentoNormalizado =
+                normalizarTexto(
+                        conhecimento
+                );
+
+
+        Set<String> palavrasPergunta =
+                Arrays.stream(
+                                perguntaNormalizada
+                                        .split("\\s+")
+                        )
+                        .filter(
+                                palavra ->
+                                        palavra.length() >= 3
+                        )
+                        .collect(
+                                Collectors.toSet()
+                        );
+
+
+        if (palavrasPergunta.isEmpty()) {
+
+            return false;
+        }
+
+
+        int palavrasEncontradas = 0;
+
+
+        for (String palavra : palavrasPergunta) {
+
+            if (conhecimentoNormalizado.contains(
+                    palavra
+            )) {
+
+                palavrasEncontradas++;
+            }
+        }
+
+
+        return palavrasEncontradas >= 1;
+    }
+
+
+    // ============================================================
+    // NORMALIZAR TEXTO
+    // ============================================================
+
+    private String normalizarTexto(
+            String texto
+    ) {
+
+        return texto
+                .toLowerCase()
+                .replaceAll(
+                        "[^a-záàâãéêíóôõúç0-9\\s]",
+                        " "
+                )
+                .replaceAll(
+                        "\\s+",
+                        " "
+                )
+                .trim();
+    }
+
+
+    // ============================================================
     // CRIAR JSON
     // ============================================================
 
     private String criarJson(
-            List<ChatMessage> historico
+            List<ChatMessage> historico,
+            String conhecimento,
+            OrigemResposta origem
     ) {
 
         JsonObject json =
@@ -166,31 +318,58 @@ public class GroqService {
 
 
         // ========================================================
-        // CONHECIMENTO DO RAG
+        // INSTRUÇÃO DO SISTEMA
         // ========================================================
 
-        JsonObject conhecimento =
+        JsonObject mensagemSistema =
                 new JsonObject();
 
-        conhecimento.addProperty(
+        mensagemSistema.addProperty(
                 "role",
                 "system"
         );
 
-        conhecimento.addProperty(
-                "content",
-                "Use o conhecimento abaixo como contexto para responder às perguntas.\n\n"
-                        + conhecimentoService.carregarConhecimento()
-        );
 
-        mensagens.add(conhecimento);
+        if (origem == OrigemResposta.RAG) {
+
+            mensagemSistema.addProperty(
+                    "content",
+                    "Você é um assistente útil, educado e objetivo. " +
+                            "Responda sempre em português do Brasil.\n\n" +
+                            "Use o conhecimento abaixo para responder " +
+                            "à pergunta do usuário quando ele for relevante.\n\n" +
+                            "CONHECIMENTO:\n" +
+                            conhecimento
+            );
+
+        } else {
+
+            mensagemSistema.addProperty(
+                    "content",
+                    "Você é um assistente útil, educado e objetivo. " +
+                            "Responda sempre em português do Brasil."
+            );
+        }
+
+
+        mensagens.add(
+                mensagemSistema
+        );
 
 
         // ========================================================
-        // HISTÓRICO DA CONVERSA
+        // ADICIONAR HISTÓRICO DA CONVERSA
         // ========================================================
 
         for (ChatMessage mensagem : historico) {
+
+            if ("system".equals(
+                    mensagem.getRole()
+            )) {
+
+                continue;
+            }
+
 
             JsonObject item =
                     new JsonObject();
@@ -307,7 +486,9 @@ public class GroqService {
 
 
             JsonArray choices =
-                    json.getAsJsonArray("choices");
+                    json.getAsJsonArray(
+                            "choices"
+                    );
 
 
             if (choices == null ||
@@ -406,11 +587,56 @@ public class GroqService {
         }
 
 
-        // ========================================================
-        // OUTRO ERRO
-        // ========================================================
-
         return causa;
+    }
+
+
+    // ============================================================
+    // ORIGEM DA RESPOSTA
+    // ============================================================
+
+    public enum OrigemResposta {
+
+        RAG,
+        INTERNET,
+        FALLBACK_LOCAL
+    }
+
+
+    // ============================================================
+    // RESULTADO DA RESPOSTA
+    // ============================================================
+
+    public static class ResultadoResposta {
+
+        private final String resposta;
+
+        private final OrigemResposta origem;
+
+
+        public ResultadoResposta(
+                String resposta,
+                OrigemResposta origem
+        ) {
+
+            this.resposta =
+                    resposta;
+
+            this.origem =
+                    origem;
+        }
+
+
+        public String getResposta() {
+
+            return resposta;
+        }
+
+
+        public OrigemResposta getOrigem() {
+
+            return origem;
+        }
     }
 
 
