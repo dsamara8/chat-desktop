@@ -83,20 +83,34 @@ public class GroqService {
             String apiKey =
                     GroqConfig.getApiKey();
 
+
             String conhecimento =
                     conhecimentoService
                             .carregarConhecimento();
+
 
             String pergunta =
                     obterUltimaPergunta(
                             historico
                     );
 
+
             OrigemResposta origem =
                     determinarOrigem(
                             pergunta,
                             conhecimento
                     );
+
+
+            String fonte = null;
+
+
+            if (origem == OrigemResposta.RAG) {
+
+                fonte =
+                        "conhecimento.txt";
+            }
+
 
             String json =
                     criarJson(
@@ -136,6 +150,10 @@ public class GroqService {
                             .build();
 
 
+            final String fonteFinal =
+                    fonte;
+
+
             return httpClient
                     .sendAsync(
                             request,
@@ -150,13 +168,17 @@ public class GroqService {
                             resposta ->
                                     new ResultadoResposta(
                                             resposta,
-                                            origem
+                                            origem,
+                                            fonteFinal
                                     )
                     )
                     .exceptionallyCompose(
-                            erro -> CompletableFuture.failedFuture(
-                                    tratarErroComunicacao(erro)
-                            )
+                            erro ->
+                                    CompletableFuture.failedFuture(
+                                            tratarErroComunicacao(
+                                                    erro
+                                            )
+                                    )
                     );
 
         } catch (Exception e) {
@@ -181,6 +203,7 @@ public class GroqService {
             ChatMessage mensagem =
                     historico.get(i);
 
+
             if ("user".equals(
                     mensagem.getRole()
             )) {
@@ -188,6 +211,7 @@ public class GroqService {
                 return mensagem.getContent();
             }
         }
+
 
         return "";
     }
@@ -210,6 +234,7 @@ public class GroqService {
             return OrigemResposta.RAG;
         }
 
+
         return OrigemResposta.FALLBACK_LOCAL;
     }
 
@@ -227,6 +252,7 @@ public class GroqService {
                 normalizarTexto(
                         pergunta
                 );
+
 
         String conhecimentoNormalizado =
                 normalizarTexto(
@@ -307,6 +333,7 @@ public class GroqService {
         JsonObject json =
                 new JsonObject();
 
+
         json.addProperty(
                 "model",
                 GroqConfig.MODEL
@@ -323,6 +350,7 @@ public class GroqService {
 
         JsonObject mensagemSistema =
                 new JsonObject();
+
 
         mensagemSistema.addProperty(
                 "role",
@@ -358,7 +386,7 @@ public class GroqService {
 
 
         // ========================================================
-        // ADICIONAR HISTÓRICO DA CONVERSA
+        // ADICIONAR HISTÓRICO
         // ========================================================
 
         for (ChatMessage mensagem : historico) {
@@ -374,17 +402,22 @@ public class GroqService {
             JsonObject item =
                     new JsonObject();
 
+
             item.addProperty(
                     "role",
                     mensagem.getRole()
             );
+
 
             item.addProperty(
                     "content",
                     mensagem.getContent()
             );
 
-            mensagens.add(item);
+
+            mensagens.add(
+                    item
+            );
         }
 
 
@@ -394,7 +427,9 @@ public class GroqService {
         );
 
 
-        return gson.toJson(json);
+        return gson.toJson(
+                json
+        );
     }
 
 
@@ -613,10 +648,13 @@ public class GroqService {
 
         private final OrigemResposta origem;
 
+        private final String fonte;
+
 
         public ResultadoResposta(
                 String resposta,
-                OrigemResposta origem
+                OrigemResposta origem,
+                String fonte
         ) {
 
             this.resposta =
@@ -624,6 +662,9 @@ public class GroqService {
 
             this.origem =
                     origem;
+
+            this.fonte =
+                    fonte;
         }
 
 
@@ -636,6 +677,12 @@ public class GroqService {
         public OrigemResposta getOrigem() {
 
             return origem;
+        }
+
+
+        public String getFonte() {
+
+            return fonte;
         }
     }
 

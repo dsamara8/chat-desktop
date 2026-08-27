@@ -6,16 +6,34 @@ import java.nio.charset.StandardCharsets;
 
 public class ConhecimentoService {
 
+    // ============================================================
+    // NOME DO ARQUIVO DE CONHECIMENTO
+    // ============================================================
+
+    private static final String NOME_ARQUIVO =
+            "conhecimento.txt";
+
+
+    // ============================================================
+    // CARREGAR CONHECIMENTO
+    // ============================================================
+
     public String carregarConhecimento() {
 
         try (InputStream inputStream =
-                     getClass().getResourceAsStream("/conhecimento.txt")) {
+                     getClass().getResourceAsStream(
+                             "/" + NOME_ARQUIVO
+                     )) {
 
             if (inputStream == null) {
+
                 throw new IllegalStateException(
-                        "Arquivo conhecimento.txt não encontrado."
+                        "Arquivo " +
+                                NOME_ARQUIVO +
+                                " não encontrado."
                 );
             }
+
 
             return new String(
                     inputStream.readAllBytes(),
@@ -25,9 +43,21 @@ public class ConhecimentoService {
         } catch (IOException e) {
 
             throw new IllegalStateException(
-                    "Não foi possível ler o arquivo conhecimento.txt.",
+                    "Não foi possível ler o arquivo " +
+                            NOME_ARQUIVO +
+                            ".",
                     e
             );
         }
+    }
+
+
+    // ============================================================
+    // OBTER NOME DO ARQUIVO
+    // ============================================================
+
+    public String getNomeArquivo() {
+
+        return NOME_ARQUIVO;
     }
 }
