@@ -16,6 +16,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
@@ -27,6 +28,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ChatController {
 
@@ -177,6 +179,20 @@ public class ChatController {
                 new ContextMenu();
 
 
+        // ========================================================
+        // OPÇÃO RENOMEAR
+        // ========================================================
+
+        MenuItem itemRenomear =
+                new MenuItem(
+                        "✏️ Renomear conversa"
+                );
+
+
+        // ========================================================
+        // OPÇÃO EXCLUIR
+        // ========================================================
+
         MenuItem itemExcluir =
                 new MenuItem(
                         "🗑 Excluir conversa"
@@ -185,7 +201,33 @@ public class ChatController {
 
         menuContexto
                 .getItems()
-                .add(itemExcluir);
+                .addAll(
+                        itemRenomear,
+                        itemExcluir
+                );
+
+
+        // ========================================================
+        // RENOMEAR CONVERSA
+        // ========================================================
+
+        itemRenomear.setOnAction(event -> {
+
+            String tituloSelecionado =
+                    listaConversas
+                            .getSelectionModel()
+                            .getSelectedItem();
+
+
+            if (tituloSelecionado == null) {
+                return;
+            }
+
+
+            renomearConversa(
+                    tituloSelecionado
+            );
+        });
 
 
         // ========================================================
@@ -238,6 +280,149 @@ public class ChatController {
 
 
     // ============================================================
+    // RENOMEAR CONVERSA
+    // ============================================================
+
+    private void renomearConversa(
+            String tituloAtual
+    ) {
+
+        Conversa conversaParaRenomear = null;
+
+
+        // ========================================================
+        // PROCURAR CONVERSA
+        // ========================================================
+
+        for (Conversa conversa : conversas) {
+
+            if (conversa.getTitulo().equals(
+                    tituloAtual
+            )) {
+
+                conversaParaRenomear =
+                        conversa;
+
+                break;
+            }
+        }
+
+
+        if (conversaParaRenomear == null) {
+            return;
+        }
+
+
+        // ========================================================
+        // CAIXA DE DIÁLOGO
+        // ========================================================
+
+        TextInputDialog dialog =
+                new TextInputDialog(
+                        conversaParaRenomear.getTitulo()
+                );
+
+
+        dialog.setTitle(
+                "Renomear conversa"
+        );
+
+
+        dialog.setHeaderText(
+                "Digite o novo nome da conversa:"
+        );
+
+
+        dialog.setContentText(
+                "Novo nome:"
+        );
+
+
+        Optional<String> resultado =
+                dialog.showAndWait();
+
+
+        // ========================================================
+        // VERIFICAR RESULTADO
+        // ========================================================
+
+        if (resultado.isEmpty()) {
+            return;
+        }
+
+
+        String novoTitulo =
+                resultado
+                        .get()
+                        .trim();
+
+
+        // ========================================================
+        // NÃO ACEITAR NOME VAZIO
+        // ========================================================
+
+        if (novoTitulo.isEmpty()) {
+            return;
+        }
+
+
+        // ========================================================
+        // LIMITAR TAMANHO
+        // ========================================================
+
+        if (novoTitulo.length() > 45) {
+
+            novoTitulo =
+                    novoTitulo
+                            .substring(
+                                    0,
+                                    45
+                            )
+                            .trim();
+
+            novoTitulo += "...";
+        }
+
+
+        // ========================================================
+        // ALTERAR TÍTULO
+        // ========================================================
+
+        conversaParaRenomear.setTitulo(
+                novoTitulo
+        );
+
+
+        // ========================================================
+        // ATUALIZAR LISTA
+        // ========================================================
+
+        atualizarListaConversas();
+
+
+        // ========================================================
+        // SELECIONAR NOVAMENTE A CONVERSA
+        // ========================================================
+
+        int indice =
+                conversas.indexOf(
+                        conversaParaRenomear
+                );
+
+
+        if (indice >= 0 &&
+                indice < listaConversas
+                        .getItems()
+                        .size()) {
+
+            listaConversas
+                    .getSelectionModel()
+                    .select(indice);
+        }
+    }
+
+
+    // ============================================================
     // EXCLUIR CONVERSA
     // ============================================================
 
@@ -254,7 +439,9 @@ public class ChatController {
 
         for (Conversa conversa : conversas) {
 
-            if (conversa.getTitulo().equals(titulo)) {
+            if (conversa.getTitulo().equals(
+                    titulo
+            )) {
 
                 conversaParaExcluir =
                         conversa;
@@ -274,7 +461,8 @@ public class ChatController {
         // ========================================================
 
         boolean eraConversaAtual =
-                conversaParaExcluir == conversaAtual;
+                conversaParaExcluir ==
+                        conversaAtual;
 
 
         // ========================================================
@@ -375,7 +563,9 @@ public class ChatController {
 
         for (Conversa conversa : conversas) {
 
-            if (conversa.getTitulo().equals(titulo)) {
+            if (conversa.getTitulo().equals(
+                    titulo
+            )) {
 
                 conversaAtual =
                         conversa;
@@ -863,10 +1053,6 @@ public class ChatController {
         }
 
 
-        // ========================================================
-        // VERIFICAR SE A ÚLTIMA MENSAGEM É DO ASSISTENTE
-        // ========================================================
-
         ChatMessage ultimaMensagem =
                 historico.get(
                         historico.size() - 1
@@ -881,18 +1067,10 @@ public class ChatController {
         }
 
 
-        // ========================================================
-        // REMOVER ÚLTIMA RESPOSTA DO HISTÓRICO
-        // ========================================================
-
         historico.remove(
                 historico.size() - 1
         );
 
-
-        // ========================================================
-        // REMOVER RESPOSTA DA INTERFACE
-        // ========================================================
 
         if (ultimoContainerIA != null) {
 
@@ -909,10 +1087,6 @@ public class ChatController {
         botaoRegenerarResposta = null;
 
 
-        // ========================================================
-        // ATUALIZAR CONVERSA
-        // ========================================================
-
         if (conversaAtual != null) {
 
             conversaAtual.setHistorico(
@@ -921,16 +1095,8 @@ public class ChatController {
         }
 
 
-        // ========================================================
-        // BLOQUEAR INTERFACE
-        // ========================================================
-
         bloquearInterface();
 
-
-        // ========================================================
-        // GERAR NOVA RESPOSTA
-        // ========================================================
 
         groqService
                 .enviarMensagemComOrigem(
