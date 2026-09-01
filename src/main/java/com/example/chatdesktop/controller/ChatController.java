@@ -1,6 +1,8 @@
 package com.example.chatdesktop.controller;
 
 import com.example.chatdesktop.model.ChatMessage;
+import com.example.chatdesktop.model.Conversa;
+import com.example.chatdesktop.service.DatabaseService;
 import com.example.chatdesktop.service.GroqService;
 import com.example.chatdesktop.service.TemaService;
 
@@ -67,12 +69,14 @@ public class ChatController {
 
 
     // ============================================================
-    // SERVIÇO
+    // SERVIÇOS
     // ============================================================
 
     private GroqService groqService;
 
     private TemaService temaService;
+
+    private DatabaseService databaseService;
 
 
     // ============================================================
@@ -89,6 +93,8 @@ public class ChatController {
     private List<Conversa> conversas;
 
     private Conversa conversaAtual;
+
+    private int conversaIdAtual = -1;
 
 
     // ============================================================
@@ -114,21 +120,34 @@ public class ChatController {
     @FXML
     public void initialize() {
 
-        groqService =
-                new GroqService();
+        groqService = new GroqService();
 
-        temaService =
-                new TemaService();
+        temaService = new TemaService();
 
-        temaEscuro =
-                temaService.carregarTema();
+        databaseService = new DatabaseService();
 
-        historico =
-                new ArrayList<>();
+        temaEscuro = temaService.carregarTema();
 
-        conversas =
-                new ArrayList<>();
 
+        // ========================================================
+        // CARREGAR CONVERSAS DO SQLITE
+        // ========================================================
+
+        conversas = databaseService.carregarConversas();
+
+
+        // ========================================================
+        // CONFIGURAR LISTA
+        // ========================================================
+
+        configurarListaConversas();
+
+        atualizarListaConversas();
+
+
+        // ========================================================
+        // INICIAR NOVA CONVERSA
+        // ========================================================
 
         iniciarNovaConversaInterna();
 
@@ -143,9 +162,6 @@ public class ChatController {
 
 
         Platform.runLater(this::aplicarTema);
-
-
-        configurarListaConversas();
 
         configurarAtalhos();
 
@@ -164,17 +180,15 @@ public class ChatController {
         );
 
 
-        // ========================================================
-        // ABRIR CONVERSA AO CLICAR
-        // ========================================================
-
         listaConversas
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener(
-                        (observable,
-                         conversaAnterior,
-                         conversaSelecionada) -> {
+                        (
+                                observable,
+                                conversaAnterior,
+                                conversaSelecionada
+                        ) -> {
 
                             if (conversaSelecionada == null) {
                                 return;
@@ -187,27 +201,15 @@ public class ChatController {
                 );
 
 
-        // ========================================================
-        // MENU DE CONTEXTO
-        // ========================================================
-
         ContextMenu menuContexto =
                 new ContextMenu();
 
-
-        // ========================================================
-        // OPÇÃO RENOMEAR
-        // ========================================================
 
         MenuItem itemRenomear =
                 new MenuItem(
                         "✏️ Renomear conversa"
                 );
 
-
-        // ========================================================
-        // OPÇÃO EXCLUIR
-        // ========================================================
 
         MenuItem itemExcluir =
                 new MenuItem(
@@ -224,7 +226,7 @@ public class ChatController {
 
 
         // ========================================================
-        // RENOMEAR CONVERSA
+        // RENOMEAR
         // ========================================================
 
         itemRenomear.setOnAction(event -> {
@@ -247,7 +249,7 @@ public class ChatController {
 
 
         // ========================================================
-        // EXCLUIR CONVERSA
+        // EXCLUIR
         // ========================================================
 
         itemExcluir.setOnAction(event -> {
@@ -270,7 +272,7 @@ public class ChatController {
 
 
         // ========================================================
-        // MOSTRAR MENU COM BOTÃO DIREITO
+        // MENU COM BOTÃO DIREITO
         // ========================================================
 
         listaConversas.setOnContextMenuRequested(event -> {
@@ -296,7 +298,7 @@ public class ChatController {
 
 
     // ============================================================
-    // APLICAR TEMA NA DIALOG (VISUAL PREMIUM, SEM MOLDURA NATIVA)
+    // APLICAR TEMA NA DIALOG
     // ============================================================
 
     private void aplicarTemaDialog(
@@ -319,7 +321,8 @@ public class ChatController {
         if (css == null) {
 
             System.err.println(
-                    "Erro: CSS da dialog não foi encontrado: " + caminhoCss
+                    "Erro: CSS da dialog não foi encontrado: "
+                            + caminhoCss
             );
 
             return;
@@ -330,39 +333,36 @@ public class ChatController {
                 css.toExternalForm()
         );
 
+
         dialogPane.getStyleClass().add(
                 "dialog-pane-custom"
         );
 
 
-        // ========================================================
-        // ÍCONE CUSTOMIZADO NO LUGAR DO "?" PADRÃO
-        // ========================================================
-
         Label icone =
                 new Label(emoji);
+
 
         icone.getStyleClass().add(
                 "dialog-icone"
         );
+
 
         dialogPane.setGraphic(
                 icone
         );
 
 
-        // ========================================================
-        // JANELA SEM MOLDURA NATIVA + SOMBRA
-        // ========================================================
-
         Stage stage =
                 (Stage) dialogPane
                         .getScene()
                         .getWindow();
 
+
         stage.initStyle(
                 StageStyle.TRANSPARENT
         );
+
 
         dialogPane
                 .getScene()
@@ -370,10 +370,16 @@ public class ChatController {
                         Color.TRANSPARENT
                 );
 
+
         dialogPane.setEffect(
                 new DropShadow(
                         24,
-                        Color.rgb(120, 70, 90, 0.35)
+                        Color.rgb(
+                                120,
+                                70,
+                                90,
+                                0.35
+                        )
                 )
         );
     }
@@ -389,10 +395,6 @@ public class ChatController {
 
         Conversa conversaParaRenomear = null;
 
-
-        // ========================================================
-        // PROCURAR CONVERSA
-        // ========================================================
 
         for (Conversa conversa : conversas) {
 
@@ -412,10 +414,6 @@ public class ChatController {
             return;
         }
 
-
-        // ========================================================
-        // CAIXA DE DIÁLOGO
-        // ========================================================
 
         TextInputDialog dialog =
                 new TextInputDialog(
@@ -448,33 +446,19 @@ public class ChatController {
                 dialog.showAndWait();
 
 
-        // ========================================================
-        // VERIFICAR RESULTADO
-        // ========================================================
-
         if (resultado.isEmpty()) {
             return;
         }
 
 
         String novoTitulo =
-                resultado
-                        .get()
-                        .trim();
+                resultado.get().trim();
 
-
-        // ========================================================
-        // NÃO ACEITAR NOME VAZIO
-        // ========================================================
 
         if (novoTitulo.isEmpty()) {
             return;
         }
 
-
-        // ========================================================
-        // LIMITAR TAMANHO
-        // ========================================================
 
         if (novoTitulo.length() > 45) {
 
@@ -491,7 +475,7 @@ public class ChatController {
 
 
         // ========================================================
-        // ALTERAR TÍTULO
+        // ALTERAR NA MEMÓRIA
         // ========================================================
 
         conversaParaRenomear.setTitulo(
@@ -500,15 +484,20 @@ public class ChatController {
 
 
         // ========================================================
-        // ATUALIZAR LISTA
+        // ALTERAR NO SQLITE
         // ========================================================
+
+        if (conversaParaRenomear.getId() != -1) {
+
+            databaseService.atualizarTituloConversa(
+                    conversaParaRenomear.getId(),
+                    novoTitulo
+            );
+        }
+
 
         atualizarListaConversas();
 
-
-        // ========================================================
-        // SELECIONAR NOVAMENTE A CONVERSA
-        // ========================================================
 
         int indice =
                 conversas.indexOf(
@@ -516,14 +505,13 @@ public class ChatController {
                 );
 
 
-        if (indice >= 0 &&
-                indice < listaConversas
-                        .getItems()
-                        .size()) {
+        if (indice >= 0) {
 
             listaConversas
                     .getSelectionModel()
-                    .select(indice);
+                    .select(
+                            indice
+                    );
         }
     }
 
@@ -538,10 +526,6 @@ public class ChatController {
 
         Conversa conversaParaExcluir = null;
 
-
-        // ========================================================
-        // PROCURAR CONVERSA
-        // ========================================================
 
         for (Conversa conversa : conversas) {
 
@@ -561,10 +545,6 @@ public class ChatController {
             return;
         }
 
-
-        // ========================================================
-        // CONFIRMAÇÃO
-        // ========================================================
 
         Alert alerta =
                 new Alert(
@@ -618,20 +598,13 @@ public class ChatController {
                 alerta.showAndWait();
 
 
-        // ========================================================
-        // CANCELAR
-        // ========================================================
-
-        if (resultado.isEmpty() ||
+        if (resultado.isEmpty()
+                ||
                 resultado.get() != botaoExcluir) {
 
             return;
         }
 
-
-        // ========================================================
-        // VERIFICAR SE É A CONVERSA ATUAL
-        // ========================================================
 
         boolean eraConversaAtual =
                 conversaParaExcluir ==
@@ -639,17 +612,25 @@ public class ChatController {
 
 
         // ========================================================
-        // REMOVER CONVERSA
+        // EXCLUIR DO SQLITE
+        // ========================================================
+
+        if (conversaParaExcluir.getId() != -1) {
+
+            databaseService.excluirConversa(
+                    conversaParaExcluir.getId()
+            );
+        }
+
+
+        // ========================================================
+        // REMOVER DA MEMÓRIA
         // ========================================================
 
         conversas.remove(
                 conversaParaExcluir
         );
 
-
-        // ========================================================
-        // ATUALIZAR BARRA LATERAL
-        // ========================================================
 
         atualizarListaConversas();
 
@@ -686,7 +667,6 @@ public class ChatController {
 
             botaoNovaConversa.setDisable(false);
 
-
             campoMensagem.requestFocus();
 
 
@@ -722,7 +702,9 @@ public class ChatController {
 
         listaConversas
                 .getItems()
-                .setAll(titulos);
+                .setAll(
+                        titulos
+                );
     }
 
 
@@ -743,12 +725,19 @@ public class ChatController {
                 conversaAtual =
                         conversa;
 
+
+                conversaIdAtual =
+                        conversaAtual.getId();
+
+
                 historico =
                         conversa.getHistorico();
+
 
                 messagesBox
                         .getChildren()
                         .clear();
+
 
                 ultimoContainerIA = null;
 
@@ -838,6 +827,8 @@ public class ChatController {
                 );
 
 
+        conversaIdAtual = -1;
+
         ultimoContainerIA = null;
 
         botaoRegenerarResposta = null;
@@ -858,8 +849,7 @@ public class ChatController {
 
 
         String titulo =
-                primeiraPergunta
-                        .trim();
+                primeiraPergunta.trim();
 
 
         if (titulo.length() > 45) {
@@ -877,9 +867,6 @@ public class ChatController {
         conversaAtual.setTitulo(
                 titulo
         );
-
-
-        atualizarListaConversas();
     }
 
 
@@ -931,9 +918,11 @@ public class ChatController {
 
 
         campoMensagem.sceneProperty().addListener(
-                (observable,
-                 cenaAnterior,
-                 novaCena) -> {
+                (
+                        observable,
+                        cenaAnterior,
+                        novaCena
+                ) -> {
 
                     if (novaCena == null) {
                         return;
@@ -945,7 +934,8 @@ public class ChatController {
                             event -> {
 
                                 if (event.isControlDown()
-                                        && event.getCode() == KeyCode.N) {
+                                        &&
+                                        event.getCode() == KeyCode.N) {
 
                                     novaConversa();
 
@@ -956,7 +946,8 @@ public class ChatController {
 
 
                                 if (event.isControlDown()
-                                        && event.getCode() == KeyCode.L) {
+                                        &&
+                                        event.getCode() == KeyCode.L) {
 
                                     campoMensagem.clear();
 
@@ -1025,28 +1016,34 @@ public class ChatController {
         Scene scene =
                 botaoTema.getScene();
 
+
         if (scene == null) {
             return;
         }
+
 
         String caminhoCss =
                 temaEscuro
                         ? "/com/example/chatdesktop/css/chat-dark.css"
                         : "/com/example/chatdesktop/css/chat.css";
 
+
         URL css =
                 getClass().getResource(
                         caminhoCss
                 );
 
+
         if (css == null) {
 
             System.err.println(
-                    "Erro: CSS não encontrado: " + caminhoCss
+                    "Erro: CSS não encontrado: "
+                            + caminhoCss
             );
 
             return;
         }
+
 
         scene.getStylesheets().clear();
 
@@ -1054,8 +1051,11 @@ public class ChatController {
                 css.toExternalForm()
         );
 
+
         botaoTema.setText(
-                temaEscuro ? "☀" : "🌙"
+                temaEscuro
+                        ? "☀"
+                        : "🌙"
         );
     }
 
@@ -1070,7 +1070,9 @@ public class ChatController {
         temaEscuro =
                 !temaEscuro;
 
+
         aplicarTema();
+
 
         temaService.salvarTema(
                 temaEscuro
@@ -1100,10 +1102,29 @@ public class ChatController {
                 historico.size() == 1;
 
 
+        // ========================================================
+        // PRIMEIRA PERGUNTA
+        // ========================================================
+
         if (primeiraPergunta) {
 
             definirTituloDaConversa(
                     mensagem
+            );
+
+
+            // ====================================================
+            // SALVAR CONVERSA NO SQLITE
+            // ====================================================
+
+            conversaIdAtual =
+                    databaseService.salvarConversa(
+                            conversaAtual.getTitulo()
+                    );
+
+
+            conversaAtual.setId(
+                    conversaIdAtual
             );
 
 
@@ -1132,12 +1153,29 @@ public class ChatController {
         );
 
 
-        historico.add(
+        ChatMessage mensagemUsuario =
                 new ChatMessage(
                         "user",
                         mensagem
-                )
+                );
+
+
+        historico.add(
+                mensagemUsuario
         );
+
+
+        // ========================================================
+        // SALVAR MENSAGEM DO USUÁRIO
+        // ========================================================
+
+        if (conversaIdAtual != -1) {
+
+            databaseService.salvarMensagem(
+                    conversaIdAtual,
+                    mensagemUsuario
+            );
+        }
 
 
         bloquearInterface();
@@ -1174,12 +1212,29 @@ public class ChatController {
             );
 
 
-            historico.add(
+            ChatMessage mensagemIA =
                     new ChatMessage(
                             "assistant",
                             resultado.getResposta()
-                    )
+                    );
+
+
+            historico.add(
+                    mensagemIA
             );
+
+
+            // ====================================================
+            // SALVAR RESPOSTA DA IA
+            // ====================================================
+
+            if (conversaIdAtual != -1) {
+
+                databaseService.salvarMensagem(
+                        conversaIdAtual,
+                        mensagemIA
+                );
+            }
 
 
             if (conversaAtual != null) {
@@ -1199,12 +1254,13 @@ public class ChatController {
 
 
     // ============================================================
-    // REGENERAR RESPOSTA
-    // ============================================================
+// REGENERAR RESPOSTA
+// ============================================================
 
     private void regenerarResposta() {
 
-        if (historico == null ||
+        if (historico == null
+                ||
                 historico.size() < 2) {
 
             return;
@@ -1217,6 +1273,10 @@ public class ChatController {
                 );
 
 
+        // ========================================================
+        // VERIFICAR SE A ÚLTIMA MENSAGEM É DA IA
+        // ========================================================
+
         if (!"assistant".equals(
                 ultimaMensagem.getRole()
         )) {
@@ -1225,10 +1285,30 @@ public class ChatController {
         }
 
 
+        // ========================================================
+        // REMOVER RESPOSTA DO HISTÓRICO
+        // ========================================================
+
         historico.remove(
                 historico.size() - 1
         );
 
+
+        // ========================================================
+        // REMOVER RESPOSTA ANTIGA DO SQLITE
+        // ========================================================
+
+        if (conversaIdAtual != -1) {
+
+            databaseService.excluirUltimaRespostaIA(
+                    conversaIdAtual
+            );
+        }
+
+
+        // ========================================================
+        // REMOVER RESPOSTA DA TELA
+        // ========================================================
 
         if (ultimoContainerIA != null) {
 
@@ -1245,6 +1325,10 @@ public class ChatController {
         botaoRegenerarResposta = null;
 
 
+        // ========================================================
+        // ATUALIZAR CONVERSA ATUAL
+        // ========================================================
+
         if (conversaAtual != null) {
 
             conversaAtual.setHistorico(
@@ -1253,8 +1337,16 @@ public class ChatController {
         }
 
 
+        // ========================================================
+        // BLOQUEAR INTERFACE
+        // ========================================================
+
         bloquearInterface();
 
+
+        // ========================================================
+        // PEDIR NOVA RESPOSTA
+        // ========================================================
 
         groqService
                 .enviarMensagemComOrigem(
@@ -1289,7 +1381,8 @@ public class ChatController {
                     causa.getMessage();
 
 
-            if (mensagemErro == null ||
+            if (mensagemErro == null
+                    ||
                     mensagemErro.isBlank()) {
 
                 mensagemErro =
@@ -1325,10 +1418,6 @@ public class ChatController {
             String fonte
     ) {
 
-        // ========================================================
-        // MENSAGEM DO USUÁRIO
-        // ========================================================
-
         if (usuario) {
 
             Label label =
@@ -1341,7 +1430,9 @@ public class ChatController {
 
 
             label.getStyleClass()
-                    .add("mensagem-usuario");
+                    .add(
+                            "mensagem-usuario"
+                    );
 
 
             HBox container =
@@ -1349,10 +1440,14 @@ public class ChatController {
 
 
             container.getStyleClass()
-                    .add("container-mensagem");
+                    .add(
+                            "container-mensagem"
+                    );
 
             container.getStyleClass()
-                    .add("container-usuario");
+                    .add(
+                            "container-usuario"
+                    );
 
 
             container.setAlignment(
@@ -1362,13 +1457,11 @@ public class ChatController {
 
             messagesBox
                     .getChildren()
-                    .add(container);
+                    .add(
+                            container
+                    );
 
         } else {
-
-            // ====================================================
-            // MENSAGEM DA IA
-            // ====================================================
 
             Label label =
                     new Label(mensagem);
@@ -1380,19 +1473,21 @@ public class ChatController {
 
 
             label.getStyleClass()
-                    .add("mensagem-ia");
+                    .add(
+                            "mensagem-ia"
+                    );
 
-
-            // ====================================================
-            // BOTÃO COPIAR
-            // ====================================================
 
             Button botaoCopiar =
-                    new Button("📋 Copiar");
+                    new Button(
+                            "📋 Copiar"
+                    );
 
 
             botaoCopiar.getStyleClass()
-                    .add("botao-copiar");
+                    .add(
+                            "botao-copiar"
+                    );
 
 
             botaoCopiar.setOnAction(event -> {
@@ -1437,27 +1532,22 @@ public class ChatController {
             });
 
 
-            // ====================================================
-            // CAIXA DA RESPOSTA
-            // ====================================================
-
             VBox caixaResposta =
                     new VBox(8);
 
 
-            caixaResposta
-                    .getStyleClass()
-                    .add("caixa-resposta-ia");
+            caixaResposta.getStyleClass()
+                    .add(
+                            "caixa-resposta-ia"
+                    );
 
 
             caixaResposta
                     .getChildren()
-                    .add(label);
+                    .add(
+                            label
+                    );
 
-
-            // ====================================================
-            // INDICADOR DE ORIGEM
-            // ====================================================
 
             if (origemResposta != null) {
 
@@ -1470,50 +1560,50 @@ public class ChatController {
 
 
                 origem.getStyleClass()
-                        .add("origem-resposta");
+                        .add(
+                                "origem-resposta"
+                        );
 
 
                 caixaResposta
                         .getChildren()
-                        .add(origem);
+                        .add(
+                                origem
+                        );
             }
 
 
-            // ====================================================
-            // FONTE DO CONHECIMENTO
-            // ============================================================
-
-            if (fonte != null &&
+            if (fonte != null
+                    &&
                     !fonte.isBlank()) {
 
                 Label labelFonte =
                         new Label(
-                                "📄 Fonte: " + fonte
+                                "📄 Fonte: "
+                                        + fonte
                         );
 
 
                 labelFonte.getStyleClass()
-                        .add("fonte-resposta");
+                        .add(
+                                "fonte-resposta"
+                        );
 
 
                 caixaResposta
                         .getChildren()
-                        .add(labelFonte);
+                        .add(
+                                labelFonte
+                        );
             }
 
 
-            // ====================================================
-            // BOTÃO COPIAR
-            // ====================================================
-
             caixaResposta
                     .getChildren()
-                    .add(botaoCopiar);
+                    .add(
+                            botaoCopiar
+                    );
 
-
-            // ====================================================
-            // BOTÃO REGENERAR
-            // ====================================================
 
             Button novoBotaoRegenerar =
                     new Button(
@@ -1548,10 +1638,6 @@ public class ChatController {
             caixaResposta.setMaxWidth(520);
 
 
-            // ====================================================
-            // CONTAINER
-            // ====================================================
-
             HBox container =
                     new HBox(
                             caixaResposta
@@ -1559,10 +1645,14 @@ public class ChatController {
 
 
             container.getStyleClass()
-                    .add("container-mensagem");
+                    .add(
+                            "container-mensagem"
+                    );
 
             container.getStyleClass()
-                    .add("container-ia");
+                    .add(
+                            "container-ia"
+                    );
 
 
             container.setAlignment(
@@ -1572,21 +1662,15 @@ public class ChatController {
 
             messagesBox
                     .getChildren()
-                    .add(container);
+                    .add(
+                            container
+                    );
 
-
-            // ====================================================
-            // GUARDAR ÚLTIMA RESPOSTA
-            // ====================================================
 
             ultimoContainerIA =
                     container;
         }
 
-
-        // ========================================================
-        // ROLAR PARA BAIXO
-        // ========================================================
 
         Platform.runLater(() ->
                 scrollChat.setVvalue(1.0)
@@ -1626,9 +1710,12 @@ public class ChatController {
 
         botaoEnviar.setDisable(true);
 
+
         if (botaoRegenerarResposta != null) {
 
-            botaoRegenerarResposta.setDisable(true);
+            botaoRegenerarResposta.setDisable(
+                    true
+            );
         }
     }
 
@@ -1643,66 +1730,15 @@ public class ChatController {
 
         botaoEnviar.setDisable(false);
 
+
         if (botaoRegenerarResposta != null) {
 
-            botaoRegenerarResposta.setDisable(false);
+            botaoRegenerarResposta.setDisable(
+                    false
+            );
         }
+
 
         campoMensagem.requestFocus();
-    }
-
-
-    // ============================================================
-    // CLASSE CONVERSA
-    // ============================================================
-
-    private static class Conversa {
-
-        private String titulo;
-
-        private List<ChatMessage> historico;
-
-
-        public Conversa(
-                String titulo,
-                List<ChatMessage> historico
-        ) {
-
-            this.titulo =
-                    titulo;
-
-            this.historico =
-                    historico;
-        }
-
-
-        public String getTitulo() {
-
-            return titulo;
-        }
-
-
-        public void setTitulo(
-                String titulo
-        ) {
-
-            this.titulo =
-                    titulo;
-        }
-
-
-        public List<ChatMessage> getHistorico() {
-
-            return historico;
-        }
-
-
-        public void setHistorico(
-                List<ChatMessage> historico
-        ) {
-
-            this.historico =
-                    historico;
-        }
     }
 }
