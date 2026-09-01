@@ -2,6 +2,7 @@ package com.example.chatdesktop.controller;
 
 import com.example.chatdesktop.model.ChatMessage;
 import com.example.chatdesktop.service.GroqService;
+import com.example.chatdesktop.service.TemaService;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -9,20 +10,27 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -63,6 +71,8 @@ public class ChatController {
     // ============================================================
 
     private GroqService groqService;
+
+    private TemaService temaService;
 
 
     // ============================================================
@@ -107,6 +117,12 @@ public class ChatController {
         groqService =
                 new GroqService();
 
+        temaService =
+                new TemaService();
+
+        temaEscuro =
+                temaService.carregarTema();
+
         historico =
                 new ArrayList<>();
 
@@ -126,7 +142,7 @@ public class ChatController {
         );
 
 
-        botaoTema.setText("🌙");
+        Platform.runLater(this::aplicarTema);
 
 
         configurarListaConversas();
@@ -280,6 +296,90 @@ public class ChatController {
 
 
     // ============================================================
+    // APLICAR TEMA NA DIALOG (VISUAL PREMIUM, SEM MOLDURA NATIVA)
+    // ============================================================
+
+    private void aplicarTemaDialog(
+            DialogPane dialogPane,
+            String emoji
+    ) {
+
+        String caminhoCss =
+                temaEscuro
+                        ? "/com/example/chatdesktop/css/chat-dark.css"
+                        : "/com/example/chatdesktop/css/chat.css";
+
+
+        URL css =
+                getClass().getResource(
+                        caminhoCss
+                );
+
+
+        if (css == null) {
+
+            System.err.println(
+                    "Erro: CSS da dialog não foi encontrado: " + caminhoCss
+            );
+
+            return;
+        }
+
+
+        dialogPane.getStylesheets().add(
+                css.toExternalForm()
+        );
+
+        dialogPane.getStyleClass().add(
+                "dialog-pane-custom"
+        );
+
+
+        // ========================================================
+        // ÍCONE CUSTOMIZADO NO LUGAR DO "?" PADRÃO
+        // ========================================================
+
+        Label icone =
+                new Label(emoji);
+
+        icone.getStyleClass().add(
+                "dialog-icone"
+        );
+
+        dialogPane.setGraphic(
+                icone
+        );
+
+
+        // ========================================================
+        // JANELA SEM MOLDURA NATIVA + SOMBRA
+        // ========================================================
+
+        Stage stage =
+                (Stage) dialogPane
+                        .getScene()
+                        .getWindow();
+
+        stage.initStyle(
+                StageStyle.TRANSPARENT
+        );
+
+        dialogPane
+                .getScene()
+                .setFill(
+                        Color.TRANSPARENT
+                );
+
+        dialogPane.setEffect(
+                new DropShadow(
+                        24,
+                        Color.rgb(120, 70, 90, 0.35)
+                )
+        );
+    }
+
+
+    // ============================================================
     // RENOMEAR CONVERSA
     // ============================================================
 
@@ -335,6 +435,12 @@ public class ChatController {
 
         dialog.setContentText(
                 "Novo nome:"
+        );
+
+
+        aplicarTemaDialog(
+                dialog.getDialogPane(),
+                "✏️"
         );
 
 
@@ -452,6 +558,73 @@ public class ChatController {
 
 
         if (conversaParaExcluir == null) {
+            return;
+        }
+
+
+        // ========================================================
+        // CONFIRMAÇÃO
+        // ========================================================
+
+        Alert alerta =
+                new Alert(
+                        Alert.AlertType.CONFIRMATION
+                );
+
+
+        alerta.setTitle(
+                "Excluir conversa"
+        );
+
+
+        alerta.setHeaderText(
+                "Excluir esta conversa?"
+        );
+
+
+        alerta.setContentText(
+                "Tem certeza que deseja excluir a conversa \""
+                        + conversaParaExcluir.getTitulo()
+                        + "\"?\n\n"
+                        + "Essa ação não pode ser desfeita."
+        );
+
+
+        ButtonType botaoExcluir =
+                new ButtonType(
+                        "Excluir"
+                );
+
+
+        ButtonType botaoCancelar =
+                new ButtonType(
+                        "Cancelar"
+                );
+
+
+        alerta.getButtonTypes().setAll(
+                botaoExcluir,
+                botaoCancelar
+        );
+
+
+        aplicarTemaDialog(
+                alerta.getDialogPane(),
+                "🗑️"
+        );
+
+
+        Optional<ButtonType> resultado =
+                alerta.showAndWait();
+
+
+        // ========================================================
+        // CANCELAR
+        // ========================================================
+
+        if (resultado.isEmpty() ||
+                resultado.get() != botaoExcluir) {
+
             return;
         }
 
@@ -844,79 +1017,64 @@ public class ChatController {
 
 
     // ============================================================
+    // APLICAR TEMA
+    // ============================================================
+
+    private void aplicarTema() {
+
+        Scene scene =
+                botaoTema.getScene();
+
+        if (scene == null) {
+            return;
+        }
+
+        String caminhoCss =
+                temaEscuro
+                        ? "/com/example/chatdesktop/css/chat-dark.css"
+                        : "/com/example/chatdesktop/css/chat.css";
+
+        URL css =
+                getClass().getResource(
+                        caminhoCss
+                );
+
+        if (css == null) {
+
+            System.err.println(
+                    "Erro: CSS não encontrado: " + caminhoCss
+            );
+
+            return;
+        }
+
+        scene.getStylesheets().clear();
+
+        scene.getStylesheets().add(
+                css.toExternalForm()
+        );
+
+        botaoTema.setText(
+                temaEscuro ? "☀" : "🌙"
+        );
+    }
+
+
+    // ============================================================
     // ALTERNAR TEMA
     // ============================================================
 
     @FXML
     private void alternarTema() {
 
-        Scene scene =
-                botaoTema.getScene();
+        temaEscuro =
+                !temaEscuro;
 
+        aplicarTema();
 
-        if (scene == null) {
-            return;
-        }
-
-
-        if (!temaEscuro) {
-
-            URL cssEscuro =
-                    getClass().getResource(
-                            "/com/example/chatdesktop/css/chat-dark.css"
-                    );
-
-
-            if (cssEscuro == null) {
-
-                System.err.println(
-                        "Erro: chat-dark.css não foi encontrado."
-                );
-
-                return;
-            }
-
-
-            scene.getStylesheets().clear();
-
-            scene.getStylesheets().add(
-                    cssEscuro.toExternalForm()
-            );
-
-
-            temaEscuro = true;
-
-            botaoTema.setText("☀");
-
-        } else {
-
-            URL cssClaro =
-                    getClass().getResource(
-                            "/com/example/chatdesktop/css/chat.css"
-                    );
-
-
-            if (cssClaro == null) {
-
-                System.err.println(
-                        "Erro: chat.css não foi encontrado."
-                );
-
-                return;
-            }
-
-
-            scene.getStylesheets().clear();
-
-            scene.getStylesheets().add(
-                    cssClaro.toExternalForm()
-            );
-
-
-            temaEscuro = false;
-
-            botaoTema.setText("🌙");
-        }
+        temaService.salvarTema(
+                temaEscuro
+        );
     }
 
 
@@ -1346,7 +1504,7 @@ public class ChatController {
 
             // ====================================================
             // BOTÃO COPIAR
-            // ============================================================
+            // ====================================================
 
             caixaResposta
                     .getChildren()
@@ -1355,7 +1513,7 @@ public class ChatController {
 
             // ====================================================
             // BOTÃO REGENERAR
-            // ============================================================
+            // ====================================================
 
             Button novoBotaoRegenerar =
                     new Button(
