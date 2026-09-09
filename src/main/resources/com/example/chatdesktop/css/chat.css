@@ -1,22 +1,29 @@
-/* ========================================= */
-/* FUNDO PRINCIPAL */
-/* ========================================= */
+/* ========================================================= */
+/* CHAT JAVA FX - TEMA CLARO MODERNO                         */
+/* Mantendo a identidade rosa pastel do projeto              */
+/* ========================================================= */
+
+
+/* ========================================================= */
+/* FUNDO PRINCIPAL                                            */
+/* ========================================================= */
 
 .root {
     -fx-background-color: #FCF9FA;
+    -fx-font-family: "Segoe UI";
 }
 
 
-/* ========================================= */
-/* BARRA LATERAL */
-/* ========================================= */
+/* ========================================================= */
+/* BARRA LATERAL                                               */
+/* ========================================================= */
 
 .sidebar {
     -fx-background-color: #F9E4EC;
 
-    -fx-border-color: #F0D2DD;
+    -fx-border-color: transparent;
 
-    -fx-border-width: 0 1px 0 0;
+    -fx-padding: 18px 14px 14px 14px;
 }
 
 .sidebar-titulo {
@@ -26,31 +33,31 @@
 
     -fx-text-fill: #493A40;
 
-    -fx-padding: 0 0 20px 4px;
+    -fx-padding: 2px 4px 16px 4px;
 }
 
 .sidebar-secao {
-    -fx-font-size: 13px;
+    -fx-font-size: 12px;
 
     -fx-font-weight: bold;
 
     -fx-text-fill: #80606E;
 
-    -fx-padding: 20px 4px 8px 4px;
+    -fx-padding: 18px 6px 8px 6px;
 }
 
 .sidebar-opcoes {
-    -fx-border-color: #F0D2DD;
+    -fx-border-color: transparent;
 
-    -fx-border-width: 1px 0 0 0;
+    -fx-border-width: 0;
 
-    -fx-padding: 10px 0 0 0;
+    -fx-padding: 12px 0 0 0;
 }
 
 
-/* ========================================= */
-/* LISTA DE CONVERSAS */
-/* ========================================= */
+/* ========================================================= */
+/* LISTA DE CONVERSAS                                          */
+/* ========================================================= */
 
 .lista-conversas {
     -fx-background-color: transparent;
@@ -59,7 +66,7 @@
 
     -fx-control-inner-background: transparent;
 
-    -fx-padding: 2px;
+    -fx-padding: 3px 0;
 }
 
 .lista-conversas .viewport {
@@ -73,11 +80,15 @@
 
     -fx-font-size: 13px;
 
-    -fx-padding: 10px 12px;
+    -fx-padding: 11px 13px;
 
-    -fx-background-radius: 10px;
+    -fx-background-radius: 12px;
 
-    -fx-border-radius: 10px;
+    -fx-border-radius: 12px;
+
+    -fx-border-color: transparent;
+
+    -fx-font-weight: normal;
 }
 
 .lista-conversas .list-cell:hover {
@@ -94,6 +105,15 @@
     -fx-text-fill: white;
 
     -fx-font-weight: bold;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(160, 90, 115, 0.12),
+            5,
+            0,
+            0,
+            1
+    );
 }
 
 .lista-conversas .list-cell:empty {
@@ -101,20 +121,86 @@
 }
 
 
-/* ========================================= */
-/* CABEÇALHO */
-/* ========================================= */
+/* ========================================================= */
+/* MENU DE CONTEXTO                                            */
+/* ========================================================= */
+
+.context-menu {
+    -fx-background-color: #FFF9FB;
+
+    -fx-background-radius: 14px;
+
+    -fx-border-color: #E8C7D3;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 14px;
+
+    -fx-padding: 6px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 70, 90, 0.18),
+            18,
+            0.15,
+            0,
+            5
+    );
+}
+
+.context-menu .menu-item {
+    -fx-background-color: transparent;
+
+    -fx-background-radius: 9px;
+
+    -fx-border-radius: 9px;
+
+    -fx-padding: 9px 12px;
+
+    -fx-min-width: 190px;
+}
+
+.context-menu .menu-item .label {
+    -fx-text-fill: #6F4A59;
+
+    -fx-font-size: 13px;
+
+    -fx-font-weight: normal;
+}
+
+.context-menu .menu-item:hover,
+.context-menu .menu-item:focused {
+    -fx-background-color: #F9E4EC;
+}
+
+.context-menu .menu-item:hover .label,
+.context-menu .menu-item:focused .label {
+    -fx-text-fill: #8F4F68;
+
+    -fx-font-weight: bold;
+}
+
+.context-menu .separator {
+    -fx-padding: 3px 0;
+}
+
+
+/* ========================================================= */
+/* CABEÇALHO                                                   */
+/* ========================================================= */
 
 .header {
     -fx-background-color: #F9E4EC;
 
-    -fx-border-color: #F0D2DD;
+    -fx-border-color: transparent;
 
-    -fx-border-width: 0 0 1px 0;
+    -fx-border-width: 0;
+
+    -fx-padding: 18px 24px 17px 24px;
 }
 
 .titulo {
-    -fx-font-size: 24px;
+    -fx-font-size: 23px;
 
     -fx-font-weight: bold;
 
@@ -125,18 +211,20 @@
     -fx-font-size: 10px;
 
     -fx-text-fill: #78A982;
+
+    -fx-font-weight: bold;
 }
 
 .status {
-    -fx-font-size: 13px;
+    -fx-font-size: 12px;
 
     -fx-text-fill: #806D75;
 }
 
 
-/* ========================================= */
-/* ÁREA DA CONVERSA */
-/* ========================================= */
+/* ========================================================= */
+/* ÁREA DA CONVERSA                                            */
+/* ========================================================= */
 
 .chat-scroll {
     -fx-background-color: #FCF9FA;
@@ -145,98 +233,71 @@
 
     -fx-border-color: transparent;
 
-    -fx-padding: 0;
+    -fx-padding: 8px 10px 8px 10px;
 
     -fx-hbar-policy: never;
 
     -fx-vbar-policy: always;
 }
 
-
-/* ========================================= */
-/* ÁREA INTERNA DO SCROLL */
-/* ========================================= */
-
 .chat-scroll > .viewport {
     -fx-background-color: #FCF9FA;
 }
 
 
-/* ========================================= */
-/* BARRA DE ROLAGEM VERTICAL */
-/* ========================================= */
+/* ========================================================= */
+/* BARRA DE ROLAGEM                                            */
+/* ========================================================= */
 
 .chat-scroll .scroll-bar:vertical {
-    /* Mesmo fundo da área da conversa */
-    -fx-background-color: #FCF9FA;
+    -fx-background-color: transparent;
 
     -fx-border-color: transparent;
 
-    -fx-padding: 2px;
+    -fx-padding: 3px;
 
-    -fx-pref-width: 12px;
+    -fx-pref-width: 10px;
 
-    -fx-min-width: 12px;
+    -fx-min-width: 10px;
 
-    -fx-max-width: 12px;
+    -fx-max-width: 10px;
 
-    -fx-opacity: 1;
+    -fx-opacity: 0.85;
 }
 
-
-/* ========================================= */
-/* FUNDO INTERNO DA BARRA */
-/* ========================================= */
-
 .chat-scroll .scroll-bar:vertical .track-background {
-    -fx-background-color: #FCF9FA;
+    -fx-background-color: transparent;
 
-    -fx-background-radius: 6px;
+    -fx-background-radius: 8px;
 }
 
 .chat-scroll .scroll-bar:vertical .track {
-    -fx-background-color: #FCF9FA;
+    -fx-background-color: transparent;
 
-    -fx-background-radius: 6px;
+    -fx-background-radius: 8px;
 }
-
-
-/* ========================================= */
-/* BARRINHA QUE VOCÊ ARRASTA */
-/* ========================================= */
 
 .chat-scroll .scroll-bar:vertical .thumb {
     -fx-background-color: #D99AAF;
 
-    -fx-background-radius: 6px;
+    -fx-background-radius: 8px;
 
-    -fx-border-radius: 6px;
+    -fx-border-radius: 8px;
+
+    -fx-opacity: 0.8;
+}
+
+.chat-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #C9829B;
 
     -fx-opacity: 1;
 }
 
-
-/* ========================================= */
-/* HOVER DA BARRINHA */
-/* ========================================= */
-
-.chat-scroll .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #C9829B;
-}
-
-
-/* ========================================= */
-/* BARRINHA PRESSIONADA */
-/* ========================================= */
-
 .chat-scroll .scroll-bar:vertical .thumb:pressed {
     -fx-background-color: #B96F89;
+
+    -fx-opacity: 1;
 }
-
-
-/* ========================================= */
-/* REMOVER SETINHAS */
-/* ========================================= */
 
 .chat-scroll .scroll-bar:vertical .increment-button,
 .chat-scroll .scroll-bar:vertical .decrement-button {
@@ -265,9 +326,9 @@
 }
 
 
-/* ========================================= */
-/* BARRA HORIZONTAL - ESCONDIDA */
-/* ========================================= */
+/* ========================================================= */
+/* BARRA HORIZONTAL ESCONDIDA                                */
+/* ========================================================= */
 
 .chat-scroll .scroll-bar:horizontal {
     -fx-background-color: transparent;
@@ -320,175 +381,89 @@
 }
 
 
-/* ========================================= */
-/* MENSAGENS */
-/* ========================================= */
+/* ========================================================= */
+/* ÁREA DAS MENSAGENS                                         */
+/* ========================================================= */
 
 .messages-box {
     -fx-background-color: #FCF9FA;
+
+    -fx-padding: 18px 16px 20px 16px;
 }
 
 
-/* ========================================= */
-/* MENSAGEM DA IA */
-/* ========================================= */
+/* ========================================================= */
+/* MENSAGEM DA IA                                              */
+/* ========================================================= */
 
 .mensagem-ia {
-    -fx-background-color: #F3ECEF;
+    -fx-background-color: transparent;
 
     -fx-text-fill: #40353A;
 
-    -fx-background-radius: 6px 18px 18px 18px;
+    -fx-padding: 0;
 
-    -fx-padding: 14px 18px;
+    -fx-font-size: 14px;
 
-    -fx-font-size: 15px;
-
-    -fx-line-spacing: 3px;
+    -fx-line-spacing: 4px;
 }
 
 
-/* ========================================= */
-/* MENSAGEM DO USUÁRIO */
-/* ========================================= */
+/* ========================================================= */
+/* MENSAGEM DO USUÁRIO                                         */
+/* ========================================================= */
 
 .mensagem-usuario {
     -fx-background-color: #E8A6BD;
 
     -fx-text-fill: white;
 
-    -fx-background-radius: 18px 6px 18px 18px;
+    -fx-background-radius: 18px 7px 18px 18px;
 
-    -fx-padding: 14px 18px;
+    -fx-padding: 12px 17px;
 
-    -fx-font-size: 15px;
+    -fx-font-size: 14px;
 
-    -fx-line-spacing: 3px;
+    -fx-line-spacing: 4px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(170, 90, 120, 0.12),
+            7,
+            0,
+            0,
+            2
+    );
 }
 
 
-/* ========================================= */
-/* PARTE INFERIOR */
-/* ========================================= */
-
-.input-area {
-    -fx-background-color: #F9E4EC;
-
-    -fx-border-color: #F0D2DD;
-
-    -fx-border-width: 1px 0 0 0;
-}
-
-
-/* ========================================= */
-/* CAMPO DE MENSAGEM */
-/* ========================================= */
-
-.campo-mensagem {
-    -fx-background-color: #FFFFFF;
-
-    -fx-text-fill: #40353A;
-
-    -fx-prompt-text-fill: #9B8990;
-
-    -fx-background-radius: 22px;
-
-    -fx-border-radius: 22px;
-
-    -fx-border-color: #E2C5D0;
-
-    -fx-padding: 12px 18px;
-
-    -fx-font-size: 15px;
-}
-
-.campo-mensagem:focused {
-    -fx-border-color: #E8A6BD;
-}
-
-
-/* ========================================= */
-/* BOTÃO ENVIAR */
-/* ========================================= */
-
-.botao-enviar {
-    -fx-background-color: #D982A2;
-
-    -fx-text-fill: white;
-
-    -fx-font-size: 19px;
-
-    -fx-font-weight: bold;
-
-    -fx-background-radius: 22px;
-
-    -fx-cursor: hand;
-}
-
-.botao-enviar:hover {
-    -fx-background-color: #CC6F93;
-}
-
-.botao-enviar:pressed {
-    -fx-background-color: #BD5E82;
-}
-
-
-/* ========================================= */
-/* BOTÃO NOVA CONVERSA */
-/* ========================================= */
-
-.botao-nova-conversa {
-    -fx-background-color: #FFFFFF;
-
-    -fx-text-fill: #805466;
-
-    -fx-border-color: #E2C5D0;
-
-    -fx-border-width: 1px;
-
-    -fx-border-radius: 18px;
-
-    -fx-background-radius: 18px;
-
-    -fx-padding: 9px 15px;
-
-    -fx-font-size: 13px;
-
-    -fx-cursor: hand;
-}
-
-.botao-nova-conversa:hover {
-    -fx-background-color: #F8DCE6;
-
-    -fx-border-color: #E8A6BD;
-
-    -fx-text-fill: #70475A;
-}
-
-.botao-nova-conversa:pressed {
-    -fx-background-color: #F1C8D6;
-}
-
-
-/* ========================================= */
-/* CAIXA DA RESPOSTA DA IA */
-/* ========================================= */
+/* ========================================================= */
+/* CAIXA DA RESPOSTA DA IA                                    */
+/* ========================================================= */
 
 .caixa-resposta-ia {
     -fx-background-color: #F3ECEF;
 
-    -fx-background-radius: 6px 18px 18px 18px;
+    -fx-background-radius: 7px 18px 18px 18px;
 
-    -fx-padding: 14px 18px;
+    -fx-padding: 15px 17px;
 
-    -fx-spacing: 8px;
+    -fx-spacing: 9px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 80, 95, 0.08),
+            8,
+            0,
+            0,
+            2
+    );
 }
 
 
-/* ========================================= */
-/* BOTÕES DENTRO DA RESPOSTA DA IA */
-/* ========================================= */
+/* ========================================================= */
+/* BOTÕES DENTRO DA RESPOSTA                                  */
+/* ========================================================= */
 
 .caixa-resposta-ia .button {
     -fx-background-color: #FFF7FA;
@@ -499,13 +474,13 @@
 
     -fx-border-width: 1px;
 
-    -fx-border-radius: 16px;
+    -fx-border-radius: 14px;
 
-    -fx-background-radius: 16px;
+    -fx-background-radius: 14px;
 
-    -fx-padding: 6px 12px;
+    -fx-padding: 6px 11px;
 
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
 
     -fx-font-weight: bold;
 
@@ -529,9 +504,9 @@
 }
 
 
-/* ========================================= */
-/* BOTÃO COPIAR */
-/* ========================================= */
+/* ========================================================= */
+/* BOTÃO COPIAR                                               */
+/* ========================================================= */
 
 .botao-copiar {
     -fx-background-color: #FFF7FA;
@@ -542,26 +517,19 @@
 
     -fx-border-width: 1px;
 
-    -fx-border-radius: 16px;
+    -fx-border-radius: 14px;
 
-    -fx-background-radius: 16px;
+    -fx-background-radius: 14px;
 
-    -fx-padding: 6px 12px;
+    -fx-padding: 6px 11px;
 
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
 
     -fx-font-weight: bold;
 
     -fx-cursor: hand;
 
-    -fx-effect: dropshadow(
-            gaussian,
-            rgba(120, 80, 95, 0.08),
-            4,
-            0,
-            0,
-            1
-    );
+    -fx-effect: none;
 }
 
 .botao-copiar:hover {
@@ -570,15 +538,6 @@
     -fx-border-color: #E8A6BD;
 
     -fx-text-fill: #70475A;
-
-    -fx-effect: dropshadow(
-            gaussian,
-            rgba(120, 80, 95, 0.15),
-            6,
-            0,
-            0,
-            2
-    );
 }
 
 .botao-copiar:pressed {
@@ -587,14 +546,12 @@
     -fx-border-color: #D982A2;
 
     -fx-text-fill: #70475A;
-
-    -fx-effect: none;
 }
 
 
-/* ========================================= */
-/* BOTÃO REGENERAR */
-/* ========================================= */
+/* ========================================================= */
+/* BOTÃO REGENERAR                                             */
+/* ========================================================= */
 
 .botao-regenerar {
     -fx-background-color: #FFF7FA;
@@ -605,17 +562,19 @@
 
     -fx-border-width: 1px;
 
-    -fx-border-radius: 16px;
+    -fx-border-radius: 14px;
 
-    -fx-background-radius: 16px;
+    -fx-background-radius: 14px;
 
-    -fx-padding: 6px 12px;
+    -fx-padding: 6px 11px;
 
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
 
     -fx-font-weight: bold;
 
     -fx-cursor: hand;
+
+    -fx-effect: none;
 }
 
 .botao-regenerar:hover {
@@ -635,12 +594,144 @@
 }
 
 
-/* ========================================= */
-/* BOTÃO TEMA */
-/* ========================================= */
+/* ========================================================= */
+/* ORIGEM DA RESPOSTA                                         */
+/* ========================================================= */
 
-.botao-tema {
+.origem-resposta {
+    -fx-font-size: 10px;
+
+    -fx-text-fill: #9B7885;
+
+    -fx-padding: 2px 0 0 0;
+}
+
+.fonte-resposta {
+    -fx-font-size: 10px;
+
+    -fx-text-fill: #9B7885;
+
+    -fx-padding: 0;
+}
+
+
+/* ========================================================= */
+/* PARTE INFERIOR / INPUT                                     */
+/* ========================================================= */
+
+.input-area {
+    -fx-background-color: #F9E4EC;
+
+    -fx-border-color: transparent;
+
+    -fx-border-width: 0;
+
+    -fx-padding: 13px 17px 15px 17px;
+}
+
+
+/* ========================================================= */
+/* CAMPO DE MENSAGEM                                           */
+/* ========================================================= */
+
+.campo-mensagem {
     -fx-background-color: #FFFFFF;
+
+    -fx-text-fill: #40353A;
+
+    -fx-prompt-text-fill: #9B8990;
+
+    -fx-background-radius: 20px;
+
+    -fx-border-radius: 20px;
+
+    -fx-border-color: #E2C5D0;
+
+    -fx-border-width: 1px;
+
+    -fx-padding: 11px 17px;
+
+    -fx-font-size: 14px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 80, 95, 0.06),
+            6,
+            0,
+            0,
+            1
+    );
+}
+
+.campo-mensagem:focused {
+    -fx-border-color: #E8A6BD;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(232, 166, 189, 0.25),
+            8,
+            0,
+            0,
+            1
+    );
+}
+
+
+/* ========================================================= */
+/* BOTÃO ENVIAR                                               */
+/* ========================================================= */
+
+.botao-enviar {
+    -fx-background-color: #D982A2;
+
+    -fx-text-fill: white;
+
+    -fx-font-size: 17px;
+
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 20px;
+
+    -fx-cursor: hand;
+
+    -fx-padding: 0;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(170, 90, 120, 0.18),
+            7,
+            0,
+            0,
+            2
+    );
+}
+
+.botao-enviar:hover {
+    -fx-background-color: #CC6F93;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(170, 90, 120, 0.25),
+            9,
+            0,
+            0,
+            2
+    );
+}
+
+.botao-enviar:pressed {
+    -fx-background-color: #BD5E82;
+
+    -fx-effect: none;
+}
+
+
+/* ========================================================= */
+/* BOTÃO NOVA CONVERSA                                        */
+/* ========================================================= */
+
+.botao-nova-conversa {
+    -fx-background-color: rgba(255, 255, 255, 0.90);
 
     -fx-text-fill: #805466;
 
@@ -648,13 +739,72 @@
 
     -fx-border-width: 1px;
 
-    -fx-border-radius: 18px;
+    -fx-border-radius: 16px;
 
-    -fx-background-radius: 18px;
+    -fx-background-radius: 16px;
 
-    -fx-font-size: 16px;
+    -fx-padding: 9px 15px;
+
+    -fx-font-size: 12px;
+
+    -fx-font-weight: bold;
 
     -fx-cursor: hand;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 80, 95, 0.06),
+            5,
+            0,
+            0,
+            1
+    );
+}
+
+.botao-nova-conversa:hover {
+    -fx-background-color: #F8DCE6;
+
+    -fx-border-color: #E8A6BD;
+
+    -fx-text-fill: #70475A;
+}
+
+.botao-nova-conversa:pressed {
+    -fx-background-color: #F1C8D6;
+
+    -fx-effect: none;
+}
+
+
+/* ========================================================= */
+/* BOTÃO TEMA                                                 */
+/* ========================================================= */
+
+.botao-tema {
+    -fx-background-color: rgba(255, 255, 255, 0.90);
+
+    -fx-text-fill: #805466;
+
+    -fx-border-color: #E2C5D0;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 16px;
+
+    -fx-background-radius: 16px;
+
+    -fx-font-size: 15px;
+
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 80, 95, 0.06),
+            5,
+            0,
+            0,
+            1
+    );
 }
 
 .botao-tema:hover {
@@ -665,4 +815,575 @@
 
 .botao-tema:pressed {
     -fx-background-color: #F1C8D6;
+
+    -fx-effect: none;
+}
+
+
+/* ========================================================= */
+/* DIALOG CUSTOMIZADA                                         */
+/* ========================================================= */
+
+.dialog-pane-custom {
+    -fx-background-color: #FBE1EA;
+
+    -fx-background-insets: 0;
+
+    -fx-background-radius: 20px;
+
+    -fx-border-color: #F0C4D4;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 20px;
+
+    -fx-padding: 0;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 70, 90, 0.18),
+            20,
+            0.15,
+            0,
+            5
+    );
+}
+
+.dialog-pane-custom > *.header-panel {
+    -fx-background-color: #FBE1EA;
+
+    -fx-background-insets: 0;
+
+    -fx-background-radius: 20px 20px 0 0;
+
+    -fx-padding: 22px 24px 8px 24px;
+}
+
+.dialog-pane-custom .header-panel .label {
+    -fx-text-fill: #493A40;
+
+    -fx-font-size: 18px;
+
+    -fx-font-weight: bold;
+}
+
+.dialog-pane-custom > *.content.label {
+    -fx-text-fill: #70475A;
+
+    -fx-font-size: 13px;
+
+    -fx-padding: 4px 24px 8px 24px;
+}
+
+.dialog-pane-custom > *.content {
+    -fx-background-color: #FBE1EA;
+
+    -fx-background-insets: 0;
+}
+
+.dialog-icone {
+    -fx-font-size: 21px;
+
+    -fx-background-color: #FFFFFF;
+
+    -fx-background-radius: 50%;
+
+    -fx-min-width: 40px;
+
+    -fx-min-height: 40px;
+
+    -fx-max-width: 40px;
+
+    -fx-max-height: 40px;
+
+    -fx-alignment: center;
+}
+
+.dialog-pane-custom .text-field {
+    -fx-background-color: #FFFFFF;
+
+    -fx-border-color: #E2C5D0;
+
+    -fx-border-radius: 12px;
+
+    -fx-background-radius: 12px;
+
+    -fx-text-fill: #40353A;
+
+    -fx-prompt-text-fill: #9B8990;
+
+    -fx-padding: 10px 14px;
+
+    -fx-font-size: 14px;
+}
+
+.dialog-pane-custom .text-field:focused {
+    -fx-border-color: #E8A6BD;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(232, 166, 189, 0.30),
+            7,
+            0,
+            0,
+            0
+    );
+}
+
+.dialog-pane-custom .button-bar {
+    -fx-background-color: #FBE1EA;
+
+    -fx-background-insets: 0;
+
+    -fx-padding: 8px 20px 20px 20px;
+}
+
+.dialog-pane-custom .button {
+    -fx-background-color: #FFFFFF;
+
+    -fx-text-fill: #70475A;
+
+    -fx-border-color: transparent;
+
+    -fx-background-radius: 20px;
+
+    -fx-padding: 9px 20px;
+
+    -fx-font-size: 13px;
+
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.dialog-pane-custom .button:hover {
+    -fx-background-color: #FFF2F6;
+}
+
+.dialog-pane-custom .button:pressed {
+    -fx-background-color: #F1C8D6;
+}
+
+.dialog-pane-custom .button:default {
+    -fx-background-color: #D982A2;
+
+    -fx-text-fill: white;
+}
+
+.dialog-pane-custom .button:default:hover {
+    -fx-background-color: #CC6F93;
+}
+
+
+/* ========================================================= */
+/* LOGIN E CADASTRO - TEMA CLARO                              */
+/* ========================================================= */
+
+.login-root {
+    -fx-background-color: #FCF9FA;
+
+    -fx-font-family: "Segoe UI";
+}
+
+
+/* ========================================================= */
+/* TÍTULO                                                      */
+/* ========================================================= */
+
+.login-titulo {
+    -fx-font-size: 28px;
+
+    -fx-font-weight: bold;
+
+    -fx-text-fill: #493A40;
+}
+
+
+/* ========================================================= */
+/* SUBTÍTULO                                                   */
+/* ========================================================= */
+
+.login-subtitulo {
+    -fx-font-size: 14px;
+
+    -fx-text-fill: #806D75;
+}
+
+
+/* ========================================================= */
+/* CAMPOS                                                      */
+/* ========================================================= */
+
+.login-campo {
+    -fx-background-color: #FFFFFF;
+
+    -fx-text-fill: #40353A;
+
+    -fx-prompt-text-fill: #9B8990;
+
+    -fx-border-color: #E2C5D0;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 14px;
+
+    -fx-background-radius: 14px;
+
+    -fx-padding: 12px 16px;
+
+    -fx-font-size: 14px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(120, 80, 95, 0.05),
+            6,
+            0,
+            0,
+            1
+    );
+}
+
+.login-campo:focused {
+    -fx-border-color: #E8A6BD;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(232, 166, 189, 0.30),
+            8,
+            0,
+            0,
+            0
+    );
+}
+
+
+/* ========================================================= */
+/* BOTÃO PRINCIPAL                                             */
+/* ========================================================= */
+
+.login-botao {
+    -fx-background-color: #D982A2;
+
+    -fx-text-fill: white;
+
+    -fx-font-size: 14px;
+
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 16px;
+
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(170, 90, 120, 0.16),
+            7,
+            0,
+            0,
+            2
+    );
+}
+
+.login-botao:hover {
+    -fx-background-color: #CC6F93;
+}
+
+.login-botao:pressed {
+    -fx-background-color: #BD5E82;
+
+    -fx-effect: none;
+}
+
+
+/* ========================================================= */
+/* BOTÃO SECUNDÁRIO                                           */
+/* ========================================================= */
+
+.login-botao-secundario {
+    -fx-background-color: #FFFFFF;
+
+    -fx-text-fill: #805466;
+
+    -fx-border-color: #E2C5D0;
+
+    -fx-border-width: 1px;
+
+    -fx-border-radius: 16px;
+
+    -fx-background-radius: 16px;
+
+    -fx-font-size: 13px;
+
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.login-botao-secundario:hover {
+    -fx-background-color: #F8DCE6;
+
+    -fx-border-color: #E8A6BD;
+
+    -fx-text-fill: #70475A;
+}
+
+.login-botao-secundario:pressed {
+    -fx-background-color: #F1C8D6;
+}
+/* ========================================================= */
+/* INTERFACE MODERNA                                          */
+/* ========================================================= */
+
+.logo-area {
+    -fx-padding: 2px 2px 0 2px;
+}
+
+.logo-icone {
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #D982A2;
+}
+
+.sidebar-subtitulo {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9B8990;
+}
+
+.conteudo-principal {
+    -fx-background-color: #FCF9FA;
+}
+
+.header {
+    -fx-background-color: #F9E4EC;
+    -fx-padding: 17px 24px;
+}
+
+.status-area {
+    -fx-padding: 1px 0 0 0;
+}
+
+.header-badge {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #8F6172;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 9px;
+    -fx-border-radius: 9px;
+    -fx-border-color: #E8C7D3;
+    -fx-padding: 5px 9px;
+}
+
+.sidebar-opcoes {
+    -fx-padding: 10px 0 0 0;
+}
+
+.sidebar-secao {
+    -fx-font-size: 10px;
+    -fx-letter-spacing: 1px;
+}
+
+.botao-nova-conversa {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #805466;
+
+    -fx-border-color: #E2C5D0;
+    -fx-border-width: 1px;
+
+    -fx-background-radius: 13px;
+    -fx-border-radius: 13px;
+
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.botao-nova-conversa:hover {
+    -fx-background-color: #FFF7FA;
+    -fx-border-color: #D982A2;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(217,130,162,0.20),
+            8,
+            0,
+            0,
+            2
+    );
+}
+
+.botao-tema {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #805466;
+
+    -fx-border-color: #E2C5D0;
+    -fx-border-width: 1px;
+
+    -fx-background-radius: 13px;
+    -fx-border-radius: 13px;
+
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.botao-tema:hover {
+    -fx-background-color: #FFF7FA;
+    -fx-border-color: #D982A2;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(217,130,162,0.15),
+            8,
+            0,
+            0,
+            2
+    );
+}
+
+
+/* ========================================================= */
+/* CHAT                                                       */
+/* ========================================================= */
+
+.messages-box {
+    -fx-background-color: #FCF9FA;
+}
+
+.mensagem-ia {
+    -fx-background-color: #F3ECEF;
+
+    -fx-background-radius: 8px 18px 18px 18px;
+
+    -fx-padding: 15px 18px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(100,70,80,0.08),
+            8,
+            0,
+            0,
+            2
+    );
+}
+
+.mensagem-usuario {
+    -fx-background-color: #E8A6BD;
+
+    -fx-background-radius: 18px 8px 18px 18px;
+
+    -fx-padding: 13px 18px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(180,100,130,0.15),
+            8,
+            0,
+            0,
+            2
+    );
+}
+
+
+/* ========================================================= */
+/* ÁREA DE INPUT                                               */
+/* ========================================================= */
+
+.input-area {
+    -fx-background-color: #F9E4EC;
+
+    -fx-border-color: transparent;
+
+    -fx-padding: 12px 20px 15px 20px;
+}
+
+.input-container {
+    -fx-background-color: transparent;
+}
+
+.campo-mensagem {
+    -fx-background-color: #FFFFFF;
+
+    -fx-text-fill: #40353A;
+    -fx-prompt-text-fill: #9B8990;
+
+    -fx-border-color: #E2C5D0;
+    -fx-border-width: 1px;
+
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+
+    -fx-padding: 11px 17px;
+
+    -fx-font-size: 14px;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(100,70,80,0.08),
+            8,
+            0,
+            0,
+            2
+    );
+}
+
+.campo-mensagem:focused {
+    -fx-border-color: #D982A2;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(217,130,162,0.22),
+            9,
+            0,
+            0,
+            2
+    );
+}
+
+.botao-enviar {
+    -fx-background-color: #D982A2;
+
+    -fx-text-fill: white;
+
+    -fx-background-radius: 16px;
+
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(180,90,125,0.25),
+            8,
+            0,
+            0,
+            2
+    );
+}
+
+.botao-enviar:hover {
+    -fx-background-color: #CC6F93;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(180,90,125,0.35),
+            10,
+            0,
+            0,
+            3
+    );
+}
+
+.botao-enviar:pressed {
+    -fx-background-color: #BD5E82;
+}
+
+.input-hint {
+    -fx-font-size: 9px;
+    -fx-text-fill: #A48F97;
+
+    -fx-padding: 5px 4px 0 4px;
 }

@@ -2,6 +2,7 @@ package com.example.chatdesktop.controller;
 
 import com.example.chatdesktop.model.ChatMessage;
 import com.example.chatdesktop.model.Conversa;
+import com.example.chatdesktop.model.Usuario;
 import com.example.chatdesktop.service.DatabaseService;
 import com.example.chatdesktop.service.GroqService;
 import com.example.chatdesktop.service.TemaService;
@@ -80,6 +81,13 @@ public class ChatController {
 
 
     // ============================================================
+    // USUÁRIO LOGADO
+    // ============================================================
+
+    private Usuario usuario;
+
+
+    // ============================================================
     // HISTÓRICO DA CONVERSA ATUAL
     // ============================================================
 
@@ -111,6 +119,48 @@ public class ChatController {
     private Button botaoRegenerarResposta;
 
     private HBox ultimoContainerIA;
+
+
+    // ============================================================
+    // RECEBER USUÁRIO LOGADO
+    // ============================================================
+
+    public void setUsuario(Usuario usuario) {
+
+        this.usuario = usuario;
+
+        // Mostra a saudação personalizada
+        if (messagesBox != null
+                && messagesBox.getChildren().isEmpty()) {
+
+            adicionarMensagem(
+                    obterMensagemBoasVindas(),
+                    false,
+                    null,
+                    null
+            );
+        }
+    }
+
+
+    // ============================================================
+    // MENSAGEM DE BOAS-VINDAS
+    // ============================================================
+
+    private String obterMensagemBoasVindas() {
+
+        String nome = "usuário";
+
+        if (usuario != null
+                && usuario.getNome() != null
+                && !usuario.getNome().isBlank()) {
+
+            nome = usuario.getNome().trim();
+        }
+
+        return "Olá, " + nome + "! 🌸\n\n"
+                + "Como posso ajudar você?";
+    }
 
 
     // ============================================================
@@ -152,13 +202,10 @@ public class ChatController {
         iniciarNovaConversaInterna();
 
 
-        adicionarMensagem(
-                "Olá! 🌸\n\n" +
-                        "Como posso ajudar você?",
-                false,
-                null,
-                null
-        );
+        // A saudação NÃO é adicionada aqui porque o usuário
+        // ainda será recebido pelo método setUsuario().
+        // Isso evita aparecer "Olá, usuário!" antes de sabermos
+        // quem fez login.
 
 
         Platform.runLater(this::aplicarTema);
@@ -650,9 +697,7 @@ public class ChatController {
 
 
             adicionarMensagem(
-                    "Olá! 🌸\n\n" +
-                            "Nova conversa iniciada.\n" +
-                            "Como posso ajudar você?",
+                    obterMensagemBoasVindas(),
                     false,
                     null,
                     null
@@ -782,8 +827,7 @@ public class ChatController {
                 if (!encontrouMensagem) {
 
                     adicionarMensagem(
-                            "Olá! 🌸\n\n" +
-                                    "Como posso ajudar você?",
+                            obterMensagemBoasVindas(),
                             false,
                             null,
                             null
@@ -981,9 +1025,7 @@ public class ChatController {
 
 
         adicionarMensagem(
-                "Olá! 🌸\n\n" +
-                        "Nova conversa iniciada.\n" +
-                        "Como posso ajudar você?",
+                obterMensagemBoasVindas(),
                 false,
                 null,
                 null
@@ -1254,8 +1296,8 @@ public class ChatController {
 
 
     // ============================================================
-// REGENERAR RESPOSTA
-// ============================================================
+    // REGENERAR RESPOSTA
+    // ============================================================
 
     private void regenerarResposta() {
 
@@ -1413,12 +1455,12 @@ public class ChatController {
 
     private void adicionarMensagem(
             String mensagem,
-            boolean usuario,
+            boolean usuarioMensagem,
             GroqService.OrigemResposta origemResposta,
             String fonte
     ) {
 
-        if (usuario) {
+        if (usuarioMensagem) {
 
             Label label =
                     new Label(mensagem);

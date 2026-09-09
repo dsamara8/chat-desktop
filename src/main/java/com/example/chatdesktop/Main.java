@@ -1,5 +1,7 @@
 package com.example.chatdesktop;
 
+import com.example.chatdesktop.service.TemaService;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,12 +15,12 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
 
         URL fxml = Main.class.getResource(
-                "/com/example/chatdesktop/view/chat-view.fxml"
+                "/com/example/chatdesktop/view/login-view.fxml"
         );
 
         if (fxml == null) {
             throw new RuntimeException(
-                    "ERRO: chat-view.fxml não foi encontrado!"
+                    "ERRO: login-view.fxml não foi encontrado!"
             );
         }
 
@@ -26,28 +28,39 @@ public class Main extends Application {
 
         Scene scene = new Scene(
                 loader.load(),
-                700,
-                600
+                500,
+                500
         );
 
-        URL css = Main.class.getResource(
-                "/com/example/chatdesktop/css/chat.css"
-        );
+        // Carrega o tema que foi salvo anteriormente
+        TemaService temaService = new TemaService();
 
-        if (css == null) {
-            throw new RuntimeException(
-                    "ERRO: chat.css não foi encontrado!"
+        boolean temaEscuro = temaService.carregarTema();
+
+        URL css;
+
+        if (temaEscuro) {
+            css = Main.class.getResource(
+                    "/com/example/chatdesktop/css/chat-dark.css"
+            );
+        } else {
+            css = Main.class.getResource(
+                    "/com/example/chatdesktop/css/chat.css"
             );
         }
 
-        scene.getStylesheets().add(
-                css.toExternalForm()
+        if (css != null) {
+            scene.getStylesheets().add(
+                    css.toExternalForm()
+            );
+        }
+
+        stage.setTitle(
+                "Login - Chat JavaFX + Groq"
         );
 
-        stage.setTitle("Chat JavaFX + Groq");
-
         stage.setScene(scene);
-
+        stage.setResizable(false);
         stage.show();
     }
 

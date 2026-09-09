@@ -18,33 +18,62 @@
 
 
     <!-- ========================================================= -->
-    <!-- BARRA LATERAL -->
+    <!-- SIDEBAR                                                    -->
     <!-- ========================================================= -->
 
     <left>
 
         <VBox
-                prefWidth="230"
-                minWidth="230"
-                maxWidth="230"
+                prefWidth="245"
+                minWidth="245"
+                maxWidth="245"
                 styleClass="sidebar">
 
             <padding>
                 <Insets
-                        top="20"
-                        right="15"
-                        bottom="20"
-                        left="15"/>
+                        top="22"
+                        right="16"
+                        bottom="18"
+                        left="16"/>
             </padding>
 
 
             <!-- ================================================= -->
-            <!-- NOME DO APLICATIVO -->
+            <!-- LOGO / NOME -->
             <!-- ================================================= -->
 
-            <Label
-                    text="✦ Assistente"
-                    styleClass="sidebar-titulo"/>
+            <HBox
+                    spacing="10"
+                    alignment="CENTER_LEFT"
+                    styleClass="logo-area">
+
+                <Label
+                        text="✦"
+                        styleClass="logo-icone"/>
+
+                <VBox
+                        spacing="1">
+
+                    <Label
+                            text="Assistente"
+                            styleClass="sidebar-titulo"/>
+
+                    <Label
+                            text="Seu espaço inteligente"
+                            styleClass="sidebar-subtitulo"/>
+
+                </VBox>
+
+            </HBox>
+
+
+            <!-- ================================================= -->
+            <!-- ESPAÇO -->
+            <!-- ================================================= -->
+
+            <VBox
+                    prefHeight="22"
+                    minHeight="22"/>
 
 
             <!-- ================================================= -->
@@ -53,24 +82,21 @@
 
             <Button
                     fx:id="botaoNovaConversa"
-                    text="＋ Nova conversa"
+                    text="＋   Nova conversa"
                     maxWidth="Infinity"
+                    prefHeight="42"
                     styleClass="botao-nova-conversa"
                     onAction="#novaConversa"/>
 
 
             <!-- ================================================= -->
-            <!-- TÍTULO DO HISTÓRICO -->
+            <!-- HISTÓRICO -->
             <!-- ================================================= -->
 
             <Label
-                    text="🕘 Histórico"
+                    text="HISTÓRICO"
                     styleClass="sidebar-secao"/>
 
-
-            <!-- ================================================= -->
-            <!-- LISTA DE CONVERSAS -->
-            <!-- ================================================= -->
 
             <ListView
                     fx:id="listaConversas"
@@ -79,24 +105,28 @@
 
 
             <!-- ================================================= -->
-            <!-- OPÇÕES -->
+            <!-- PARTE INFERIOR -->
             <!-- ================================================= -->
 
             <VBox
-                    spacing="8"
+                    spacing="10"
                     styleClass="sidebar-opcoes">
 
+
                 <Label
-                        text="⚙ Opções"
+                        text="PREFERÊNCIAS"
                         styleClass="sidebar-secao"/>
 
 
+                <!-- ================================================= -->
                 <!-- BOTÃO TEMA -->
+                <!-- ================================================= -->
 
                 <Button
                         fx:id="botaoTema"
-                        text="🌙  Tema"
+                        text="🌙   Tema"
                         maxWidth="Infinity"
+                        prefHeight="42"
                         styleClass="botao-tema"
                         onAction="#alternarTema"/>
 
@@ -108,12 +138,13 @@
 
 
     <!-- ========================================================= -->
-    <!-- PARTE PRINCIPAL -->
+    <!-- ÁREA PRINCIPAL                                             -->
     <!-- ========================================================= -->
 
     <center>
 
-        <BorderPane>
+        <BorderPane
+                styleClass="conteudo-principal">
 
 
             <!-- ================================================= -->
@@ -124,20 +155,11 @@
 
                 <HBox
                         alignment="CENTER_LEFT"
-                        spacing="10"
+                        spacing="12"
                         styleClass="header">
 
-                    <padding>
-                        <Insets
-                                top="18"
-                                right="20"
-                                bottom="18"
-                                left="25"/>
-                    </padding>
-
-
                     <VBox
-                            spacing="3"
+                            spacing="4"
                             HBox.hgrow="ALWAYS">
 
                         <Label
@@ -145,8 +167,9 @@
                                 styleClass="titulo"/>
 
                         <HBox
-                                spacing="6"
-                                alignment="CENTER_LEFT">
+                                spacing="7"
+                                alignment="CENTER_LEFT"
+                                styleClass="status-area">
 
                             <Label
                                     text="●"
@@ -160,13 +183,20 @@
 
                     </VBox>
 
+
+                    <!-- Pequeno indicador visual -->
+
+                    <Label
+                            text="IA"
+                            styleClass="header-badge"/>
+
                 </HBox>
 
             </top>
 
 
             <!-- ================================================= -->
-            <!-- CONVERSA -->
+            <!-- ÁREA DA CONVERSA -->
             <!-- ================================================= -->
 
             <center>
@@ -180,15 +210,15 @@
 
                     <VBox
                             fx:id="messagesBox"
-                            spacing="16"
+                            spacing="18"
                             styleClass="messages-box">
 
                         <padding>
                             <Insets
-                                    top="25"
-                                    right="25"
-                                    bottom="25"
-                                    left="25"/>
+                                    top="30"
+                                    right="30"
+                                    bottom="30"
+                                    left="30"/>
                         </padding>
 
                     </VBox>
@@ -199,7 +229,7 @@
 
 
             <!-- ================================================= -->
-            <!-- CAMPO DE MENSAGEM -->
+            <!-- ÁREA DE DIGITAÇÃO -->
             <!-- ================================================= -->
 
             <bottom>
@@ -209,33 +239,52 @@
 
                     <padding>
                         <Insets
-                                top="15"
-                                right="20"
-                                bottom="15"
-                                left="20"/>
+                                top="14"
+                                right="22"
+                                bottom="18"
+                                left="22"/>
                     </padding>
 
 
                     <HBox
                             spacing="10"
-                            alignment="CENTER">
+                            alignment="CENTER"
+                            styleClass="input-container">
+
+
+                        <!-- ================================================= -->
+                        <!-- CAMPO -->
+                        <!-- ================================================= -->
 
                         <TextField
                                 fx:id="campoMensagem"
                                 promptText="Digite sua mensagem..."
                                 HBox.hgrow="ALWAYS"
+                                prefHeight="46"
                                 styleClass="campo-mensagem"
                                 onAction="#enviarMensagem"/>
+
+
+                        <!-- ================================================= -->
+                        <!-- ENVIAR -->
+                        <!-- ================================================= -->
 
                         <Button
                                 fx:id="botaoEnviar"
                                 text="➤"
-                                prefWidth="48"
-                                prefHeight="42"
+                                prefWidth="46"
+                                prefHeight="46"
                                 styleClass="botao-enviar"
                                 onAction="#enviarMensagem"/>
 
                     </HBox>
+
+
+                    <!-- Pequeno texto inferior -->
+
+                    <Label
+                            text="Enter para enviar"
+                            styleClass="input-hint"/>
 
                 </VBox>
 

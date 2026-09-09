@@ -70,6 +70,17 @@ public class DatabaseService {
                 """;
 
 
+        String sqlUsuarios =
+                """
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nome TEXT NOT NULL,
+                    email TEXT NOT NULL UNIQUE,
+                    senha TEXT NOT NULL
+                );
+                """;
+
+
         try (
                 Connection conexao = conectar();
 
@@ -77,13 +88,23 @@ public class DatabaseService {
                         conexao.createStatement()
         ) {
 
+            // Criar tabela de conversas
             statement.execute(
                     sqlConversas
             );
 
+
+            // Criar tabela de mensagens
             statement.execute(
                     sqlMensagens
             );
+
+
+            // Criar tabela de usuários
+            statement.execute(
+                    sqlUsuarios
+            );
+
 
             System.out.println(
                     "Banco de dados inicializado com sucesso!"
@@ -187,15 +208,18 @@ public class DatabaseService {
                     conversaId
             );
 
+
             statement.setString(
                     2,
                     mensagem.getRole()
             );
 
+
             statement.setString(
                     3,
                     mensagem.getContent()
             );
+
 
             statement.executeUpdate();
 
@@ -360,9 +384,11 @@ public class DatabaseService {
 
         return mensagens;
     }
+
+
     // ============================================================
-// ATUALIZAR TÍTULO DA CONVERSA
-// ============================================================
+    // ATUALIZAR TÍTULO DA CONVERSA
+    // ============================================================
 
     public void atualizarTituloConversa(
             int conversaId,
@@ -385,10 +411,12 @@ public class DatabaseService {
                     novoTitulo
             );
 
+
             statement.setInt(
                     2,
                     conversaId
             );
+
 
             statement.executeUpdate();
 
@@ -400,9 +428,11 @@ public class DatabaseService {
             );
         }
     }
+
+
     // ============================================================
-// EXCLUIR CONVERSA
-// ============================================================
+    // EXCLUIR CONVERSA
+    // ============================================================
 
     public void excluirConversa(
             int conversaId
@@ -424,6 +454,7 @@ public class DatabaseService {
                     conversaId
             );
 
+
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -434,9 +465,11 @@ public class DatabaseService {
             );
         }
     }
+
+
     // ============================================================
-// EXCLUIR ÚLTIMA RESPOSTA DA IA
-// ============================================================
+    // EXCLUIR ÚLTIMA RESPOSTA DA IA
+    // ============================================================
 
     public void excluirUltimaRespostaIA(
             int conversaId
@@ -460,7 +493,9 @@ public class DatabaseService {
                 Connection conexao = conectar();
 
                 PreparedStatement statement =
-                        conexao.prepareStatement(sql)
+                        conexao.prepareStatement(
+                                sql
+                        )
         ) {
 
             statement.setInt(
